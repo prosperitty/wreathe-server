@@ -14,25 +14,30 @@ export const loginPost = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const { email, password } = req.body
+
   try {
-    const { email, password } = req.body
-    // Authenticate the user by fetching user
+    // Authenticate the user by fetching user from DB
     const user = {
       id: 123,
       email: 'email@email.com',
       password: 'password',
     }
+    if (!user) {
+      return res.status(401).json({ error: 'USER DOES NOT EXIST!' })
+    }
+
     const passwordMatch = await bcrypt.compare(password, user.password)
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'invalid credentials' })
+      return res.status(401).json({ error: 'PASSWORD NOT CORRECT' })
     }
 
     const secret: string = process.env.JWT_KEY as string
     const payload: { id: number; email: string } = { id: user.id, email }
-    // Generate an access token
     const accessToken = jwt.sign(payload, secret, { expiresIn: '2m' })
-    // Generate a refresh token
     const refreshToken = jwt.sign(payload, secret, { expiresIn: '30m' })
+
+    //add refreshToken to user and store in DB?
 
     // Set refresh token as a secure HttpOnly cookie
     res.cookie('refreshToken', refreshToken, {
