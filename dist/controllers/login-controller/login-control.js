@@ -23,9 +23,13 @@ const loginGet = (req, res) => {
 };
 exports.loginGet = loginGet;
 const loginPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
     try {
+        const { email, password } = req.body;
+        if (!(email && password)) {
+            return res.status(400).json({ message: 'MISSING CREDENTIALS' });
+        }
         // Authenticate the user by fetching user from DB by username(email)
+        //FAKE USER ONLY MAKE SURE TO DELETE
         const encryptedPassword = yield bcryptjs_1.default.hash('password', 10);
         const user = {
             id: '123',
@@ -40,7 +44,7 @@ const loginPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         }
         const passwordMatch = yield bcryptjs_1.default.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({ error: 'PASSWORD NOT CORRECT' });
+            return res.status(401).json({ error: 'PASSWORD DOES NOT MATCH' });
         }
         const secret = process.env.JWT_KEY;
         const payload = { id: user.id };

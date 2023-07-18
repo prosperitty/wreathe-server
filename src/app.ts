@@ -17,9 +17,9 @@ import helmet from 'helmet'
 
 import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
-import loginRouter from './routes/login/login.js'
+import loginRouter from './routes/login.js'
 import logoutRouter from './routes/logout.js'
-import registerRouter from './routes/register/register.js'
+import registerRouter from './routes/register.js'
 
 // const prisma = new PrismaClient();
 const app: Express = express()

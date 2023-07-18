@@ -15,10 +15,14 @@ export const loginPost = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { email, password }: { email: string; password: string } = req.body
-
   try {
+    const { email, password }: { email: string; password: string } = req.body
+    if (!(email && password)) {
+      return res.status(400).json({ message: 'MISSING CREDENTIALS' })
+    }
     // Authenticate the user by fetching user from DB by username(email)
+
+    //FAKE USER ONLY MAKE SURE TO DELETE
     const encryptedPassword = await bcrypt.hash('password', 10)
     const user: User = {
       id: '123',
@@ -28,12 +32,13 @@ export const loginPost = async (
       password: encryptedPassword,
       refreshToken: null!,
     }
+
     if (!user) {
       return res.status(401).json({ error: 'USER DOES NOT EXIST!' })
     }
     const passwordMatch = await bcrypt.compare(password, user.password)
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'PASSWORD NOT CORRECT' })
+      return res.status(401).json({ error: 'PASSWORD DOES NOT MATCH' })
     }
 
     const secret: string = process.env.JWT_KEY as string

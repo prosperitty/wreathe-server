@@ -1,14 +1,14 @@
 import express from 'express'
 import {
-  registerGet,
-  registerPost,
-} from '../../controllers/register-controller/register-control.js'
+  loginGet,
+  loginPost,
+} from '../controllers/login-controller/login-control.js'
 const router = express.Router()
 
 /* GET users listing. */
-router.get('/', registerGet)
+router.get('/', loginGet)
 
-router.post('/', registerPost)
+router.post('/', loginPost)
 
 // function authenticateToken(req: any, res: Response, next: NextFunction) {
 //   const token = req.headers.authorization

@@ -15,9 +15,9 @@ const compression_1 = __importDefault(require("compression"));
 const helmet_1 = __importDefault(require("helmet"));
 const index_js_1 = __importDefault(require("./routes/index.js"));
 const users_js_1 = __importDefault(require("./routes/users.js"));
-const login_js_1 = __importDefault(require("./routes/login/login.js"));
+const login_js_1 = __importDefault(require("./routes/login.js"));
 const logout_js_1 = __importDefault(require("./routes/logout.js"));
-const register_js_1 = __importDefault(require("./routes/register/register.js"));
+const register_js_1 = __importDefault(require("./routes/register.js"));
 // const prisma = new PrismaClient();
 const app = (0, express_1.default)();
 if (process.env.NODE_ENV !== 'production') {
