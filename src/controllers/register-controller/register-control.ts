@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import { User } from '../../utils/types'
+import { NewUser } from '../../utils/types'
 import 'dotenv/config'
 
 export const registerGet = (req: Request, res: Response) => {
@@ -12,7 +12,7 @@ export const registerPost = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { firstName, lastName, email, password }: User = req.body
+  const { firstName, lastName, email, password }: NewUser = req.body
 
   // Validate user input
   if (!(firstName && lastName && email && password)) {
@@ -31,15 +31,14 @@ export const registerPost = async (
     const encryptedPassword = await bcrypt.hash(password, 10)
 
     //create new user and store in database
-    const user: User = {
+    const user: NewUser = {
       firstName,
       lastName,
       email,
       password: encryptedPassword,
-      token: undefined!,
     }
 
-    res.json({ user, message: 'user successfully created' })
+    return res.json({ user, message: 'user successfully created' })
   } catch (err) {
     return next(err)
   }

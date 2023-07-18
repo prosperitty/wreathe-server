@@ -12,15 +12,15 @@ export const authenticateToken = (
       return res.status(401).json({ error: 'No access token provided' })
     }
     const accessToken = req.headers.authorization
-    const bearer = accessToken.split(' ')
-    const bearerToken = bearer[1]
+    const bearerToken = accessToken.split(' ')[1]
     const secret: string = process.env.JWT_KEY as string
 
     jwt.verify(bearerToken, secret, (err, user) => {
-      if (err) {
-        return res.status(403).json({ error: 'Invalid access token' })
+      if (err || user === undefined) {
+        return res.status(403).json({ error: 'expired access token' })
       }
-      console.log(user, 'authenticate middleware')
+      console.log(user, 'JWT VERIFY DECODED ')
+      req.user = user
       return next()
     })
   } catch (err) {

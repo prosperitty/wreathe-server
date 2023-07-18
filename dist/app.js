@@ -10,9 +10,13 @@ const path_1 = __importDefault(require("path"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
+// const { PrismaClient } = require('@prisma/client');
+const compression_1 = __importDefault(require("compression"));
+const helmet_1 = __importDefault(require("helmet"));
 const index_js_1 = __importDefault(require("./routes/index.js"));
 const users_js_1 = __importDefault(require("./routes/users.js"));
 const login_js_1 = __importDefault(require("./routes/login/login.js"));
+const logout_js_1 = __importDefault(require("./routes/logout.js"));
 const register_js_1 = __importDefault(require("./routes/register/register.js"));
 // const prisma = new PrismaClient();
 const app = (0, express_1.default)();
@@ -21,8 +25,8 @@ if (process.env.NODE_ENV !== 'production') {
         credentials: true,
     }));
 }
-// app.use(helmet())
-// app.use(compression())
+app.use((0, helmet_1.default)());
+app.use((0, compression_1.default)());
 app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
@@ -31,6 +35,7 @@ app.use(express_1.default.static(path_1.default.join(__dirname, '../public')));
 app.use('/', index_js_1.default);
 app.use('/users', users_js_1.default);
 app.use('/login', login_js_1.default);
+app.use('/logout', logout_js_1.default);
 app.use('/register', register_js_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

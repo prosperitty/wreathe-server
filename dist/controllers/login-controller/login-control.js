@@ -23,33 +23,42 @@ const loginGet = (req, res) => {
 };
 exports.loginGet = loginGet;
 const loginPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.body;
     try {
-        const { email, password } = req.body;
-        // Authenticate the user by fetching user
+        // Authenticate the user by fetching user from DB by username(email)
+        const encryptedPassword = yield bcryptjs_1.default.hash('password', 10);
         const user = {
-            id: 123,
-            email: 'email@email.com',
-            password: 'password',
+            id: '123',
+            firstName: 'first',
+            lastName: 'last',
+            email: email,
+            password: encryptedPassword,
+            refreshToken: null,
         };
+        if (!user) {
+            return res.status(401).json({ error: 'USER DOES NOT EXIST!' });
+        }
         const passwordMatch = yield bcryptjs_1.default.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({ error: 'invalid credentials' });
+            return res.status(401).json({ error: 'PASSWORD NOT CORRECT' });
         }
         const secret = process.env.JWT_KEY;
-        const payload = { id: user.id, email };
-        // Generate an access token
-        const accessToken = jwt.sign(payload, secret, { expiresIn: '2m' });
-        // Generate a refresh token
+        const payload = { id: user.id };
+        const accessToken = jwt.sign(payload, secret, { expiresIn: '5m' });
         const refreshToken = jwt.sign(payload, secret, { expiresIn: '30m' });
+        //add refreshToken to user and store in DB?
+        user.refreshToken = refreshToken;
+        //save to db
         // Set refresh token as a secure HttpOnly cookie
         res.cookie('refreshToken', refreshToken, {
             // httpOnly: true,
             secure: false,
             sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: '/refresh-token',
         });
         // Send the access token in the response
-        res.json({ accessToken, message: 'auth passed' });
+        return res.json({ accessToken });
     }
     catch (err) {
         return next(err);

@@ -20,12 +20,12 @@ const registerGet = (req, res) => {
 };
 exports.registerGet = registerGet;
 const registerPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { firstName, lastName, email, password } = req.body;
+    // Validate user input
+    if (!(firstName && lastName && email && password)) {
+        res.status(400).send('All input is required');
+    }
     try {
-        const { firstName, lastName, email, password } = req.body;
-        // Validate user input
-        if (!(firstName && lastName && email && password)) {
-            res.status(400).send('All input is required');
-        }
         // check if user already exist
         // Validate if user exist in our database
         // if (found_username) {
@@ -34,35 +34,18 @@ const registerPost = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         //     message: 'username is taken. try another username',
         //     isValid: false,
         // })
-        bcryptjs_1.default.hash(password, 10, (err, hashedPassword) => {
-            const user = {
-                firstName,
-                lastName,
-                email,
-                password: hashedPassword,
-                token: undefined,
-            };
-            // Save the user information in the database or any other storage mechanism
-            // Replace this code with your own logic
-            // const user = {
-            //   id: 1,
-            //   username,
-            //   password: hashedPassword
-            // };
-            if (err) {
-                return next(err);
-            }
-            return res.json(user);
-        });
+        const encryptedPassword = yield bcryptjs_1.default.hash(password, 10);
+        //create new user and store in database
+        const user = {
+            firstName,
+            lastName,
+            email,
+            password: encryptedPassword,
+        };
+        return res.json({ user, message: 'user successfully created' });
     }
     catch (err) {
         return next(err);
     }
-    // if (err) {
-    // } else {
-    //   return res
-    //     .status(200)
-    //     .json({ message: 'password was encrypted', user, hashedPassword })
-    // }
 });
 exports.registerPost = registerPost;

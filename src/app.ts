@@ -18,6 +18,7 @@ import helmet from 'helmet'
 import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
 import loginRouter from './routes/login/login.js'
+import logoutRouter from './routes/logout.js'
 import registerRouter from './routes/register/register.js'
 
 // const prisma = new PrismaClient();
@@ -31,8 +32,8 @@ if (process.env.NODE_ENV !== 'production') {
   )
 }
 
-// app.use(helmet())
-// app.use(compression())
+app.use(helmet())
+app.use(compression())
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -42,6 +43,7 @@ app.use(express.static(path.join(__dirname, '../public')))
 app.use('/', indexRouter)
 app.use('/users', usersRouter)
 app.use('/login', loginRouter)
+app.use('/logout', logoutRouter)
 app.use('/register', registerRouter)
 
 // catch 404 and forward to error handler
