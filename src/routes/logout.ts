@@ -1,12 +1,7 @@
 import express, { Router } from 'express'
+import { logoutPost } from '../controllers/logout-control'
 const router: Router = express.Router()
 
-router.post('/', (req, res) => {
-  res.clearCookie('refreshtoken', { path: '/refresh_token' })
-  // Logic here for also remove refreshtoken from db
-  return res.json({
-    message: 'Logged out',
-  })
-})
+router.post('/', logoutPost)
 
 export default router

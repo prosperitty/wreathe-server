@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import { NewUser } from '../../utils/types'
+import { NewUser } from '../utils/types'
 import 'dotenv/config'
 
 export const registerGet = (req: Request, res: Response) => {

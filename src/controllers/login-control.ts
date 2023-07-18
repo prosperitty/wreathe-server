@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 // import { User } from '../../types'
 import jwt = require('jsonwebtoken')
 import 'dotenv/config'
-import { User } from '../../utils/types'
+import { User } from '../utils/types'
 
 export const loginGet = (req: Request, res: Response) => {
   res.cookie('cookie set', 'this')
