@@ -1,0 +1,58 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuid_ossp(map: "uuid-ossp")]
+}
+
+model comment {
+  comment_uid       String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content           String        @db.VarChar(500)
+  ispublished       Boolean       @default(false)
+  comment_timestamp DateTime      @default(now()) @db.Timestamptz(6)
+  thread_ref        String?       @db.Uuid
+  author_ref        String?       @db.Uuid
+  likes             String[]      @db.Uuid
+  wreathe_user      wreathe_user? @relation(fields: [author_ref], references: [user_uid], onDelete: NoAction, onUpdate: NoAction)
+  thread            thread?       @relation(fields: [thread_ref], references: [thread_uid], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model messenger {
+  message_uid                                        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content                                            String        @db.VarChar(1000)
+  message_timestamp                                  DateTime      @default(now()) @db.Timestamptz(6)
+  author_ref                                         String?       @db.Uuid
+  recepient_ref                                      String?       @db.Uuid
+  wreathe_user_messenger_author_refTowreathe_user    wreathe_user? @relation("messenger_author_refTowreathe_user", fields: [author_ref], references: [user_uid], onDelete: NoAction, onUpdate: NoAction)
+  wreathe_user_messenger_recepient_refTowreathe_user wreathe_user? @relation("messenger_recepient_refTowreathe_user", fields: [recepient_ref], references: [user_uid], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model thread {
+  thread_uid       String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content          String        @db.VarChar(500)
+  ispublished      Boolean       @default(false)
+  thread_timestamp DateTime      @default(now()) @db.Timestamptz(6)
+  author_ref       String?       @db.Uuid
+  likes            String[]      @db.Uuid
+  comments         String[]      @db.Uuid
+  comment          comment[]
+  wreathe_user     wreathe_user? @relation(fields: [author_ref], references: [user_uid], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model wreathe_user {
+  user_uid                                        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name                                      String      @db.VarChar(30)
+  last_name                                       String      @db.VarChar(30)
+  email                                           String?     @unique @db.VarChar(100)
+  username                                        String      @unique @db.VarChar(50)
+  user_password                                   String      @db.VarChar(100)
+  refresh_token                                   String?
+  comment                                         comment[]
+  messenger_messenger_author_refTowreathe_user    messenger[] @relation("messenger_author_refTowreathe_user")
+  messenger_messenger_recepient_refTowreathe_user messenger[] @relation("messenger_recepient_refTowreathe_user")
+  thread                                          thread[]
+}

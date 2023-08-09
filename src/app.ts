@@ -11,7 +11,6 @@ import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import cors from 'cors'
 
-// const { PrismaClient } = require('@prisma/client');
 import compression from 'compression'
 import helmet from 'helmet'
 
@@ -21,7 +20,6 @@ import loginRouter from './routes/login.js'
 import logoutRouter from './routes/logout.js'
 import registerRouter from './routes/register.js'
 
-// const prisma = new PrismaClient();
 const app: Express = express()
 
 if (process.env.NODE_ENV !== 'production') {

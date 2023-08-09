@@ -4,12 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const logout_control_1 = require("../controllers/logout-control");
 const router = express_1.default.Router();
-router.post('/', (req, res) => {
-    res.clearCookie('refreshtoken', { path: '/refresh_token' });
-    // Logic here for also remove refreshtoken from db
-    return res.json({
-        message: 'Logged out',
-    });
-});
+router.post('/', logout_control_1.logoutPost);
 exports.default = router;
