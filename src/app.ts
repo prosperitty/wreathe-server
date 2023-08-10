@@ -19,6 +19,7 @@ import usersRouter from './routes/users.js'
 import loginRouter from './routes/login.js'
 import logoutRouter from './routes/logout.js'
 import registerRouter from './routes/register.js'
+import threadsRouter from './routes/threads.js'
 
 const app: Express = express()
 
@@ -43,6 +44,7 @@ app.use('/users', usersRouter)
 app.use('/login', loginRouter)
 app.use('/logout', logoutRouter)
 app.use('/register', registerRouter)
+app.use('/threads', threadsRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
