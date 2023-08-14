@@ -51,7 +51,9 @@ export const registerPost = async (req: Request, res: Response) => {
 
     return res.json({ user, message: 'user successfully created' })
   } catch (err) {
-    return res.status(403).json(err)
+    return res
+      .status(403)
+      .json({ err, message: 'There was an issue registering a new user' })
   }
 }
 

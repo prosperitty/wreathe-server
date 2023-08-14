@@ -20,6 +20,8 @@ export const logoutPost = async (req: Request, res: Response) => {
       message: 'Logged out',
     })
   } catch (err) {
-    return res.status(403).json(err)
+    return res
+      .status(403)
+      .json({ err, message: 'There was an issue logging out' })
   }
 }
