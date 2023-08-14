@@ -1,20 +1,12 @@
 import express from 'express'
 import type { NextFunction, Request, Response, Router } from 'express'
 import { authenticateToken } from '../middlewares/authenticate-token'
-import {
-  usersGet,
-  usersPost,
-  usersUpdate,
-} from '../controllers/users-controller/users-control'
+import { usersGet } from '../controllers/users-controller/users-control'
 import { refreshTokenPost } from '../controllers/users-controller/refresh-token'
 const router: Router = express.Router()
 
 /* GET users listing. */
 router.get('/', usersGet)
-
-router.post('/', usersPost)
-
-router.put('/', usersUpdate)
 
 router.post('/refresh-token', refreshTokenPost)
 
