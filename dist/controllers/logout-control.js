@@ -30,7 +30,9 @@ const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     catch (err) {
-        return res.status(403).json(err);
+        return res
+            .status(403)
+            .json({ err, message: 'There was an issue logging out' });
     }
 });
 exports.logoutPost = logoutPost;

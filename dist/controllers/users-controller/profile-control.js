@@ -9,13 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersGet = void 0;
+exports.profileGet = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 /* GET users listing. */
-const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const allUsers = yield prisma.wreathe_user.findMany();
-    console.log(allUsers);
-    res.json(allUsers);
+const profileGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const foundUser = yield prisma.wreathe_user.findUniqueOrThrow({
+            //change the method to grab userid
+            where: { user_uid: req.body.userId },
+        });
+        return res.json({ foundUser });
+    }
+    catch (err) {
+        return res
+            .status(403)
+            .json({ err, message: 'There was an error fetching the user' });
+    }
 });
-exports.usersGet = usersGet;
+exports.profileGet = profileGet;

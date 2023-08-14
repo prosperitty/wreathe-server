@@ -61,7 +61,9 @@ const registerPost = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         return res.json({ user, message: 'user successfully created' });
     }
     catch (err) {
-        return res.status(403).json(err);
+        return res
+            .status(403)
+            .json({ err, message: 'There was an issue registering a new user' });
     }
 });
 exports.registerPost = registerPost;

@@ -10,8 +10,6 @@ const refresh_token_1 = require("../controllers/users-controller/refresh-token")
 const router = express_1.default.Router();
 /* GET users listing. */
 router.get('/', users_control_1.usersGet);
-router.post('/', users_control_1.usersPost);
-router.put('/', users_control_1.usersUpdate);
 router.post('/refresh-token', refresh_token_1.refreshTokenPost);
 /* GET protected route test route */
 router.get('/protected', authenticate_token_1.authenticateToken, (req, res, next) => {

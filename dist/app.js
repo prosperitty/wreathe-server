@@ -17,6 +17,7 @@ const users_js_1 = __importDefault(require("./routes/users.js"));
 const login_js_1 = __importDefault(require("./routes/login.js"));
 const logout_js_1 = __importDefault(require("./routes/logout.js"));
 const register_js_1 = __importDefault(require("./routes/register.js"));
+const threads_js_1 = __importDefault(require("./routes/threads.js"));
 const app = (0, express_1.default)();
 if (process.env.NODE_ENV !== 'production') {
     app.use((0, cors_1.default)({
@@ -35,6 +36,7 @@ app.use('/users', users_js_1.default);
 app.use('/login', login_js_1.default);
 app.use('/logout', logout_js_1.default);
 app.use('/register', register_js_1.default);
+app.use('/threads', threads_js_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next((0, http_errors_1.default)(404));

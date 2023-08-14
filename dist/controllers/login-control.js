@@ -22,7 +22,7 @@ const loginGet = (req, res) => {
     res.send('login page');
 };
 exports.loginGet = loginGet;
-const loginPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
         if (!(username && password)) {
@@ -63,7 +63,9 @@ const loginPost = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         return res.json({ accessToken });
     }
     catch (err) {
-        return next(err);
+        return res
+            .status(403)
+            .json({ err, message: 'There was an issue logging in' });
     }
 });
 exports.loginPost = loginPost;
