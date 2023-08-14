@@ -1,22 +1,18 @@
-import type { NextFunction, Request, Response } from 'express'
+import type { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt = require('jsonwebtoken')
 import 'dotenv/config'
 import { PrismaClient } from '@prisma/client'
+import { LoginCredentials } from '../utils/types'
 const prisma = new PrismaClient()
 
 export const loginGet = (req: Request, res: Response) => {
   res.send('login page')
 }
 
-export const loginPost = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const loginPost = async (req: Request, res: Response) => {
   try {
-    const { username, password }: { username: string; password: string } =
-      req.body
+    const { username, password }: LoginCredentials = req.body
     if (!(username && password)) {
       return res.status(400).json({ message: 'MISSING CREDENTIALS' })
     }
@@ -59,7 +55,9 @@ export const loginPost = async (
     // Send the access token in the response
     return res.json({ accessToken })
   } catch (err) {
-    return next(err)
+    return res
+      .status(403)
+      .json({ err, message: 'There was an issue logging in' })
   }
 }
 
