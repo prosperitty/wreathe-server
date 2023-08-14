@@ -34,8 +34,8 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
 
     // token exist, create new Refresh- and accesstoken
     const payload = { id: user.user_uid }
-    const newAccessToken = jwt.sign(payload, secret, { expiresIn: '2m' })
-    const newRefreshToken = jwt.sign(payload, secret, { expiresIn: '30m' })
+    const newAccessToken = jwt.sign(payload, secret, { expiresIn: '10m' })
+    const newRefreshToken = jwt.sign(payload, secret, { expiresIn: '60m' })
 
     // update refreshtoken on user in db
     // Could have different versions instead!
