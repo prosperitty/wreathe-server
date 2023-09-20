@@ -1,14 +1,22 @@
 import type { Request, Response } from 'express'
 import jwt = require('jsonwebtoken')
+import { setAccessToken, setRefreshToken } from '../utils/cookie-setter'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export const refreshTokenPost = async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshtoken
+  const accessToken = req.cookies.accessToken
+  const refreshToken = req.cookies.refreshToken
 
   // If we don't have a token in our request
   if (!refreshToken) {
-    return res.status(401).json({ error: 'no refresh token provided!' })
+    return res
+      .status(401)
+      .json({ error: 'no refresh token provided! Sign in.' })
+  }
+  if (accessToken) {
+    console.log('access token still exists')
+    return res.json({ accessToken })
   }
 
   try {
@@ -34,8 +42,8 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
 
     // token exist, create new Refresh- and accesstoken
     const payload = { id: user.user_uid }
-    const newAccessToken = jwt.sign(payload, secret, { expiresIn: '10m' })
-    const newRefreshToken = jwt.sign(payload, secret, { expiresIn: '60m' })
+    const newAccessToken = jwt.sign(payload, secret, { expiresIn: '1h' })
+    const newRefreshToken = jwt.sign(payload, secret, { expiresIn: '1d' })
 
     // update refreshtoken on user in db
     // Could have different versions instead!
@@ -44,19 +52,30 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
       data: { refresh_token: newRefreshToken },
     })
 
-    // All good to go, send new refreshtoken and accesstoken
-    res.cookie('refreshToken', newRefreshToken, {
-      // httpOnly: true,
-      secure: false,
-      sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-    })
+    setAccessToken(res, 'accessToken', newAccessToken, 60 * 60 * 1000)
+    setRefreshToken(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000)
 
-    return res.json({ newAccessToken })
+    return res.json({ accessToken: newAccessToken, userId: user.user_uid })
   } catch (err) {
     return res.status(403).json(err)
   }
 }
+
+// res.cookie('accessToken', newAccessToken, {
+//   // httpOnly: true,
+//   secure: false,
+//   sameSite: 'none',
+//   maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
+//   path: '/users/refresh-token',
+// })
+// // All good to go, send new refreshtoken and accesstoken
+// res.cookie('refreshToken', newRefreshToken, {
+//   // httpOnly: true,
+//   secure: false,
+//   sameSite: 'none',
+//   maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+//   path: '/users/refresh-token',
+// })
 
 // const bearerToken = req.headers.authorization!
 // const refreshToken = bearerToken.split(' ')[1]

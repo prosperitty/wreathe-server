@@ -2,13 +2,10 @@ import express from 'express'
 import type { NextFunction, Request, Response, Router } from 'express'
 import { authenticateToken } from '../middlewares/authenticate-token'
 import { usersGet } from '../controllers/users-controller/users-control'
-import { refreshTokenPost } from '../controllers/users-controller/refresh-token'
 const router: Router = express.Router()
 
 /* GET users listing. */
 router.get('/', usersGet)
-
-router.post('/refresh-token', refreshTokenPost)
 
 /* GET protected route test route */
 router.get(

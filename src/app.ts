@@ -17,15 +17,17 @@ import helmet from 'helmet'
 import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
 import loginRouter from './routes/login.js'
-import logoutRouter from './routes/logout.js'
-import registerRouter from './routes/register.js'
+// import logoutRouter from './routes/logout.js'
 import threadsRouter from './routes/threads.js'
+import registerRouter from './routes/register.js'
+import refreshTokenRouter from './routes/refresh-token.js'
 
 const app: Express = express()
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(
     cors({
+      origin: 'http://localhost:3000',
       credentials: true,
     }),
   )
@@ -42,9 +44,10 @@ app.use(express.static(path.join(__dirname, '../public')))
 app.use('/', indexRouter)
 app.use('/users', usersRouter)
 app.use('/login', loginRouter)
-app.use('/logout', logoutRouter)
+// app.use('/logout', logoutRouter)
 app.use('/register', registerRouter)
 app.use('/threads', threadsRouter)
+app.use('/refresh-token', refreshTokenRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {

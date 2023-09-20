@@ -6,11 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const authenticate_token_1 = require("../middlewares/authenticate-token");
 const users_control_1 = require("../controllers/users-controller/users-control");
-const refresh_token_1 = require("../controllers/users-controller/refresh-token");
 const router = express_1.default.Router();
 /* GET users listing. */
 router.get('/', users_control_1.usersGet);
-router.post('/refresh-token', refresh_token_1.refreshTokenPost);
 /* GET protected route test route */
 router.get('/protected', authenticate_token_1.authenticateToken, (req, res, next) => {
     try {

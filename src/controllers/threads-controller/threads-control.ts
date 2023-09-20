@@ -26,7 +26,7 @@ export const threadsPost = [
     const threadData = {
       content: req.body.content,
       ispublished: req.body.isPublished,
-      //change the method to grab useruid
+      //change the method to grab useruid usually was req.user.:id
       author_ref: req.body.userUid,
     }
     if (!errors.isEmpty()) {
@@ -56,7 +56,7 @@ export const threadsPut = [
       thread_uid: req.params.threadid,
       content: req.body.content,
       ispublished: req.body.isPublished,
-      //change the method to grab useruid
+      //change the method to grab useruid usually was req.user.:id
       author_ref: req.body.userUid,
     }
     if (!errors.isEmpty()) {

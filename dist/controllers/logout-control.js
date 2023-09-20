@@ -15,7 +15,7 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const refreshToken = req.cookies.refreshtoken;
+        const refreshToken = req.cookies.refreshToken;
         const secret = process.env.JWT_KEY;
         const decoded = jwt.verify(refreshToken, secret);
         const userId = decoded.id;
@@ -24,12 +24,15 @@ const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             where: { user_uid: userId },
             data: { refresh_token: null },
         });
-        res.clearCookie('refreshToken', { path: '/refresh_token' });
+        //bug, can not logout because cookie can only be retrieved from this path
+        res.clearCookie('refreshToken', { path: '/refresh-token' });
+        res.clearCookie('accessToken', { path: '/' });
         return res.json({
-            message: 'Logged out',
+            message: 'Log Out Successful',
         });
     }
     catch (err) {
+        console.log(err);
         return res
             .status(403)
             .json({ err, message: 'There was an issue logging out' });

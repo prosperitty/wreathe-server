@@ -16,6 +16,7 @@ exports.loginPost = exports.loginGet = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt = require("jsonwebtoken");
 require("dotenv/config");
+const cookie_setter_1 = require("../utils/cookie-setter");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const loginGet = (req, res) => {
@@ -44,23 +45,17 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         //Refresh token
         const secret = process.env.JWT_KEY;
         const payload = { id: user.user_uid };
-        const accessToken = jwt.sign(payload, secret, { expiresIn: '5m' });
-        const refreshToken = jwt.sign(payload, secret, { expiresIn: '30m' });
+        const accessToken = jwt.sign(payload, secret, { expiresIn: '1h' });
+        const refreshToken = jwt.sign(payload, secret, { expiresIn: '1d' });
         //add refreshToken to user and store in DB?
         yield prisma.wreathe_user.update({
             where: { user_uid: user.user_uid },
             data: { refresh_token: refreshToken },
         });
-        // Set refresh token as a secure HttpOnly cookie
-        res.cookie('refreshToken', refreshToken, {
-            // httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            path: '/refresh-token',
-        });
+        (0, cookie_setter_1.setAccessToken)(res, 'accessToken', accessToken, 60 * 60 * 1000);
+        (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
         // Send the access token in the response
-        return res.json({ accessToken });
+        return res.json({ accessToken, userId: user.user_uid });
     }
     catch (err) {
         return res
