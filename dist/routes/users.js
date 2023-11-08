@@ -8,7 +8,13 @@ const authenticate_token_1 = require("../middlewares/authenticate-token");
 const users_control_1 = require("../controllers/users-controller/users-control");
 const router = express_1.default.Router();
 /* GET users listing. */
-router.get('/', users_control_1.usersGet);
+router.get('/:userId', authenticate_token_1.authenticateToken, users_control_1.usersGet);
+router.get('/:userId/threads');
+router.get('/:userId/threads/:threadId');
+router.get('/:userId/threads/:threadId/comments');
+router.get('/:userId/threads/:threadId/comments/:commentId');
+router.get('/:userId/likes');
+router.get('/:userId/settings/profile');
 /* GET protected route test route */
 router.get('/protected', authenticate_token_1.authenticateToken, (req, res, next) => {
     try {

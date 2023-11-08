@@ -13,9 +13,17 @@ exports.usersGet = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 /* GET users listing. */
-const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const allUsers = yield prisma.wreathe_user.findMany();
-    console.log(allUsers);
-    res.json(allUsers);
+const usersGet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        console.log(user, '\n req user');
+        if (!user) {
+            return res.status(401).json('protected route');
+        }
+    }
+    catch (err) {
+        return next(err);
+    }
+    return res.json({ message: 'protected route accessed successfully' });
 });
 exports.usersGet = usersGet;

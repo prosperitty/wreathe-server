@@ -14,7 +14,7 @@ export const registerPost = async (req: Request, res: Response) => {
 
   // Validate user input
   if (!(firstName && lastName && email && username && password)) {
-    res.status(400).send('All input is required')
+    return res.status(400).send('All input is required')
   }
 
   try {
@@ -39,7 +39,7 @@ export const registerPost = async (req: Request, res: Response) => {
 
     //create new user and store in database
     const encryptedPassword = await bcrypt.hash(password, 10)
-    const user = await prisma.wreathe_user.create({
+    await prisma.wreathe_user.create({
       data: {
         first_name: firstName,
         last_name: lastName,
@@ -49,7 +49,7 @@ export const registerPost = async (req: Request, res: Response) => {
       },
     })
 
-    return res.json({ user, message: 'user successfully created' })
+    return res.json({ message: 'user successfully created' })
   } catch (err) {
     return res
       .status(403)

@@ -14,7 +14,7 @@ export const logoutPost = async (req: Request, res: Response) => {
       where: { user_uid: userId },
       data: { refresh_token: null },
     })
-    //bug, can not logout because cookie can only be retrieved from this path
+    //bug, can not logout without using /refresh-token path because cookie can only be retrieved from this path
     res.clearCookie('refreshToken', { path: '/refresh-token' })
     res.clearCookie('accessToken', { path: '/' })
 

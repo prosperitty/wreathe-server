@@ -44,7 +44,7 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         //Refresh token
         const secret = process.env.JWT_KEY;
-        const payload = { id: user.user_uid };
+        const payload = { id: user.user_uid, username: user.username };
         const accessToken = jwt.sign(payload, secret, { expiresIn: '1h' });
         const refreshToken = jwt.sign(payload, secret, { expiresIn: '1d' });
         //add refreshToken to user and store in DB?

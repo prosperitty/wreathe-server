@@ -46,7 +46,7 @@ const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 .json({ error: 'The user does not have a refresh token!' });
         }
         // token exist, create new Refresh- and accesstoken
-        const payload = { id: user.user_uid };
+        const payload = { id: user.user_uid, username: user.username };
         const newAccessToken = jwt.sign(payload, secret, { expiresIn: '1h' });
         const newRefreshToken = jwt.sign(payload, secret, { expiresIn: '1d' });
         // update refreshtoken on user in db
@@ -57,7 +57,7 @@ const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
         (0, cookie_setter_1.setAccessToken)(res, 'accessToken', newAccessToken, 60 * 60 * 1000);
         (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000);
-        return res.json({ accessToken: newAccessToken, userId: user.user_uid });
+        return res.json({ accessToken: newAccessToken });
     }
     catch (err) {
         return res.status(403).json(err);

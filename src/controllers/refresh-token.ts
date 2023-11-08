@@ -41,7 +41,7 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
     }
 
     // token exist, create new Refresh- and accesstoken
-    const payload = { id: user.user_uid }
+    const payload = { id: user.user_uid, username: user.username }
     const newAccessToken = jwt.sign(payload, secret, { expiresIn: '1h' })
     const newRefreshToken = jwt.sign(payload, secret, { expiresIn: '1d' })
 
@@ -55,7 +55,7 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
     setAccessToken(res, 'accessToken', newAccessToken, 60 * 60 * 1000)
     setRefreshToken(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000)
 
-    return res.json({ accessToken: newAccessToken, userId: user.user_uid })
+    return res.json({ accessToken: newAccessToken })
   } catch (err) {
     return res.status(403).json(err)
   }

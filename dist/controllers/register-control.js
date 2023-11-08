@@ -25,7 +25,7 @@ const registerPost = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const { firstName, lastName, email, username, password } = req.body;
     // Validate user input
     if (!(firstName && lastName && email && username && password)) {
-        res.status(400).send('All input is required');
+        return res.status(400).send('All input is required');
     }
     try {
         // Validate if user exist in our databaseS
@@ -49,7 +49,7 @@ const registerPost = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         //create new user and store in database
         const encryptedPassword = yield bcryptjs_1.default.hash(password, 10);
-        const user = yield prisma.wreathe_user.create({
+        yield prisma.wreathe_user.create({
             data: {
                 first_name: firstName,
                 last_name: lastName,
@@ -58,7 +58,7 @@ const registerPost = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 user_password: encryptedPassword,
             },
         });
-        return res.json({ user, message: 'user successfully created' });
+        return res.json({ message: 'user successfully created' });
     }
     catch (err) {
         return res

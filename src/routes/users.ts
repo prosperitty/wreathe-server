@@ -5,7 +5,19 @@ import { usersGet } from '../controllers/users-controller/users-control'
 const router: Router = express.Router()
 
 /* GET users listing. */
-router.get('/', usersGet)
+router.get('/:userId', authenticateToken, usersGet)
+
+router.get('/:userId/threads')
+
+router.get('/:userId/threads/:threadId')
+
+router.get('/:userId/threads/:threadId/comments')
+
+router.get('/:userId/threads/:threadId/comments/:commentId')
+
+router.get('/:userId/likes')
+
+router.get('/:userId/settings/profile')
 
 /* GET protected route test route */
 router.get(

@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 require("dotenv/config");
 const authenticateToken = (req, res, next) => {
     if (!req.headers.authorization) {
-        return res.status(401).json({ error: 'No access token provided' });
+        console.log('no headers set ');
+        return res.status(401).json('No access token provided');
     }
     const accessToken = req.headers.authorization;
     const bearerToken = accessToken.split(' ')[1];
