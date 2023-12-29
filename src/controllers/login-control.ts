@@ -15,6 +15,7 @@ export const loginPost = async (req: Request, res: Response) => {
   try {
     const { username, password }: LoginCredentials = req.body
     if (!(username && password)) {
+      console.error('MISSING CREDENTIALS!')
       return res.status(400).json({ message: 'MISSING CREDENTIALS' })
     }
 
@@ -25,10 +26,12 @@ export const loginPost = async (req: Request, res: Response) => {
       },
     })
     if (!user) {
+      console.error('USER DOES NOT EXIST!')
       return res.status(401).json({ error: 'USER DOES NOT EXIST!' })
     }
     const passwordMatch = await bcrypt.compare(password, user.user_password)
     if (!passwordMatch) {
+      console.error('PASSWORD DOES NOT MATCH!')
       return res.status(401).json({ error: 'PASSWORD DOES NOT MATCH' })
     }
 
@@ -50,6 +53,7 @@ export const loginPost = async (req: Request, res: Response) => {
     // Send the access token in the response
     return res.json({ accessToken, userId: user.user_uid })
   } catch (err) {
+    console.error('THERE WAS IN ISSUE LOGGING IN', err)
     return res
       .status(403)
       .json({ err, message: 'There was an issue logging in' })

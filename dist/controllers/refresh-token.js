@@ -17,15 +17,18 @@ const prisma = new client_1.PrismaClient();
 const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
+    const userData = req.cookies.userData;
     // If we don't have a token in our request
     if (!refreshToken) {
+        res.clearCookie('userData', { path: '/' });
+        console.error('NO REFRESH TOKEN PROVIDED! SIGN IN OR REGISTER NEEDED:');
         return res
             .status(401)
             .json({ error: 'no refresh token provided! Sign in.' });
     }
     if (accessToken) {
-        console.log('access token still exists');
-        return res.json({ accessToken });
+        console.log('ACCESS TOKEN STILL EXISTS!');
+        return res.json({ accessToken, userData });
     }
     try {
         // We have a token, let's verify it!
@@ -37,10 +40,14 @@ const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
             where: { user_uid: userId },
         });
         if (!user) {
+            console.error('USER DOES NOT EXIST! ERROR FINDING USER IN DB');
             return res.status(401).json({ error: 'User does not exist' });
         }
         // user exist, check if refreshtoken exist on user
         if (user.refresh_token !== refreshToken) {
+            console.log(user.refresh_token, '\n');
+            console.log(refreshToken, '\n');
+            console.error('NO REFRESH TOKEN FOUND ON USER! OR REFRESH TOKEN DOES NOT MATCH BROWSER REFRESH TOKEN WITH USERS REFRESH TOKEN!');
             return res
                 .status(401)
                 .json({ error: 'The user does not have a refresh token!' });
@@ -55,11 +62,20 @@ const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
             where: { user_uid: user.user_uid },
             data: { refresh_token: newRefreshToken },
         });
+        const userData = {
+            user_uid: user.user_uid,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            username: user.username,
+        };
         (0, cookie_setter_1.setAccessToken)(res, 'accessToken', newAccessToken, 60 * 60 * 1000);
         (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000);
-        return res.json({ accessToken: newAccessToken });
+        (0, cookie_setter_1.setUserData)(res, 'userData', userData, 24 * 60 * 60 * 1000);
+        return res.json({ accessToken: newAccessToken, userData });
     }
     catch (err) {
+        console.error('THERE WAS AN ISSUE REFRESHING THE TOKEN\n', err);
         return res.status(403).json(err);
     }
 });

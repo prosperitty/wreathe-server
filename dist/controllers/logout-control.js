@@ -15,6 +15,8 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // THIS IS TEST CODE FOR SERVER ACTIONS ON THE CLIENT SIDE IN NEXT JS
+        // const refreshToken = req.headers.authorization.split(' ')[1]
         const refreshToken = req.cookies.refreshToken;
         const secret = process.env.JWT_KEY;
         const decoded = jwt.verify(refreshToken, secret);
@@ -27,12 +29,13 @@ const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         //bug, can not logout without using /refresh-token path because cookie can only be retrieved from this path
         res.clearCookie('refreshToken', { path: '/refresh-token' });
         res.clearCookie('accessToken', { path: '/' });
+        res.clearCookie('userData', { path: '/' });
         return res.json({
             message: 'Log Out Successful',
         });
     }
     catch (err) {
-        console.log(err);
+        console.error('THERE WAS AN ISSUE LOGGING OUT', err);
         return res
             .status(403)
             .json({ err, message: 'There was an issue logging out' });

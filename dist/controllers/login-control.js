@@ -27,6 +27,7 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
         if (!(username && password)) {
+            console.error('MISSING CREDENTIALS!');
             return res.status(400).json({ message: 'MISSING CREDENTIALS' });
         }
         // Authenticate the user by fetching user from DB by username(username)
@@ -36,10 +37,12 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             },
         });
         if (!user) {
+            console.error('USER DOES NOT EXIST!');
             return res.status(401).json({ error: 'USER DOES NOT EXIST!' });
         }
         const passwordMatch = yield bcryptjs_1.default.compare(password, user.user_password);
         if (!passwordMatch) {
+            console.error('PASSWORD DOES NOT MATCH!');
             return res.status(401).json({ error: 'PASSWORD DOES NOT MATCH' });
         }
         //Refresh token
@@ -58,6 +61,7 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.json({ accessToken, userId: user.user_uid });
     }
     catch (err) {
+        console.error('THERE WAS IN ISSUE LOGGING IN', err);
         return res
             .status(403)
             .json({ err, message: 'There was an issue logging in' });

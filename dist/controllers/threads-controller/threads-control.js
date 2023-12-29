@@ -17,8 +17,24 @@ const prisma = new client_1.PrismaClient();
 const threadsGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const threads = yield prisma.thread.findMany({
-            where: { ispublished: true },
+            where: {
+                ispublished: true,
+                AND: [
+                    { author_ref: { not: null } },
+                    { author_ref: { not: undefined } },
+                ],
+            },
             orderBy: { thread_timestamp: 'desc' },
+            include: {
+                comment: true,
+                wreathe_user: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
+                        username: true,
+                    },
+                },
+            },
         });
         return res.json({ threads });
     }
@@ -28,28 +44,35 @@ const threadsGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.threadsGet = threadsGet;
 exports.threadsPost = [
-    (0, express_validator_1.body)('content', 'Content is required').trim().isLength({ min: 1 }),
-    (0, express_validator_1.body)('isPublished', 'boolean value needed').isBoolean(),
-    (0, express_validator_1.body)('userUid', 'missing a user id reference').isUUID(),
+    (0, express_validator_1.body)('content', 'Content is required')
+        .trim()
+        .isLength({ min: 1, max: 500 })
+        .notEmpty()
+        .withMessage('Content can not be an empty space'),
+    // body('isPublished', 'boolean value needed').isBoolean(),
+    // body('userUid', 'missing a user id reference').isUUID(),
     (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const errors = (0, express_validator_1.validationResult)(req);
         const threadData = {
             content: req.body.content,
-            ispublished: req.body.isPublished,
+            // ispublished: req.body.isPublished,
+            ispublished: true,
             //change the method to grab useruid usually was req.user.:id
-            author_ref: req.body.userUid,
+            author_ref: req.user.id,
         };
         if (!errors.isEmpty()) {
+            console.error('VALIDATION FAILURE:', errors.array());
             return res.json({ threadData, errors: errors.array() });
         }
         try {
             const thread = yield prisma.thread.create({
                 data: threadData,
             });
-            const threadURL = `/threads/${thread.thread_uid}`;
+            const threadURL = `${req.user.id}/threads/${thread.thread_uid}`;
             return res.json({ thread, threadURL });
         }
         catch (err) {
+            console.error('THERE WAS AN ISSUE CREATING A NEW POST', err);
             return res
                 .status(403)
                 .json({ err, message: 'there was an issue creating a new post' });

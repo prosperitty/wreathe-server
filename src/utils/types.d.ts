@@ -15,6 +15,13 @@ export interface User {
   refreshToken: string
 }
 
+export interface RequestUser {
+  id: string
+  username: string
+  iat: number
+  exp: number
+}
+
 export interface LoginCredentials {
   username: string
   password: string
@@ -22,6 +29,6 @@ export interface LoginCredentials {
 
 declare module 'express-serve-static-core' {
   interface Request {
-    user: object | string
+    user: RequestUser
   }
 }

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commentsDelete = exports.threadsPut = exports.commentsPost = exports.commentsGet = void 0;
+exports.commentsDelete = exports.commentsPut = exports.commentsPost = exports.commentsGet = void 0;
 const express_validator_1 = require("express-validator");
 // import cloudinary from '../../utils/cloudinary'
 const client_1 = require("@prisma/client");
@@ -31,36 +31,49 @@ const commentsGet = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.commentsGet = commentsGet;
 exports.commentsPost = [
     (0, express_validator_1.body)('content', 'Content is required').trim().isLength({ min: 1 }),
-    (0, express_validator_1.body)('isPublished', 'boolean value needed').isBoolean(),
-    (0, express_validator_1.body)('userUid', 'missing a user id reference').isUUID(),
+    // body('isPublished', 'boolean value needed').isBoolean(),
+    // body('userUid', 'missing a user id reference').isUUID(),
     (0, express_validator_1.param)('threadid', 'missing thread id parameter').isUUID(),
     (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const errors = (0, express_validator_1.validationResult)(req);
         const commentData = {
             content: req.body.content,
-            ispublished: req.body.isPublished,
+            // ispublished: req.body.isPublished,
+            ispublished: true,
             //change the method to grab useruid usually was req.user.:id
-            author_ref: req.body.userUid,
+            author_ref: req.user.id,
             thread_ref: req.params.threadid,
         };
         if (!errors.isEmpty()) {
+            console.error('VALIDATION FAILURE:', errors.array());
             return res.json({ commentData, errors: errors.array() });
         }
         try {
             const comment = yield prisma.comment.create({
                 data: commentData,
             });
-            const commentURL = `/threads/${comment.thread_ref}/comments/${comment.comment_uid}`;
-            return res.json({ comment, commentURL });
+            const commentField = yield prisma.thread.update({
+                where: { thread_uid: req.params.threadid },
+                data: {
+                    comment: {
+                        connect: { comment_uid: comment.comment_uid },
+                    },
+                },
+            });
+            console.log(commentField, '\ncomment field');
+            const threadURL = `users/${req.user.id}/threads/${comment.thread_ref}`;
+            const commentURL = `users/${req.user.id}/threads/${comment.thread_ref}/comments/${comment.comment_uid}`;
+            return res.json({ comment, commentURL, threadURL });
         }
         catch (err) {
+            console.error('THERE WAS AN ISSUE CREATING A NEW COMMENT', err);
             return res
                 .status(403)
                 .json({ err, message: 'there was an issue creating a new comment' });
         }
     }),
 ];
-exports.threadsPut = [
+exports.commentsPut = [
     (0, express_validator_1.body)('content', 'Content is required').trim().isLength({ min: 1 }),
     (0, express_validator_1.body)('isPublished', 'boolean value needed').isBoolean(),
     (0, express_validator_1.param)('threadid', 'missing thread id parameter').notEmpty().isUUID(),

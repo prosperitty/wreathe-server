@@ -20,29 +20,42 @@ export const commentsGet = async (req: Request, res: Response) => {
 
 export const commentsPost = [
   body('content', 'Content is required').trim().isLength({ min: 1 }),
-  body('isPublished', 'boolean value needed').isBoolean(),
-  body('userUid', 'missing a user id reference').isUUID(),
+  // body('isPublished', 'boolean value needed').isBoolean(),
+  // body('userUid', 'missing a user id reference').isUUID(),
   param('threadid', 'missing thread id parameter').isUUID(),
 
   async (req: Request, res: Response) => {
     const errors = validationResult(req)
     const commentData = {
       content: req.body.content,
-      ispublished: req.body.isPublished,
+      // ispublished: req.body.isPublished,
+      ispublished: true,
       //change the method to grab useruid usually was req.user.:id
-      author_ref: req.body.userUid,
+      author_ref: req.user.id,
       thread_ref: req.params.threadid,
     }
     if (!errors.isEmpty()) {
+      console.error('VALIDATION FAILURE:', errors.array())
       return res.json({ commentData, errors: errors.array() })
     }
     try {
       const comment = await prisma.comment.create({
         data: commentData,
       })
-      const commentURL = `/threads/${comment.thread_ref}/comments/${comment.comment_uid}`
-      return res.json({ comment, commentURL })
+      const commentField = await prisma.thread.update({
+        where: { thread_uid: req.params.threadid },
+        data: {
+          comment: {
+            connect: { comment_uid: comment.comment_uid },
+          },
+        },
+      })
+      console.log(commentField, '\ncomment field')
+      const threadURL = `users/${req.user.id}/threads/${comment.thread_ref}`
+      const commentURL = `users/${req.user.id}/threads/${comment.thread_ref}/comments/${comment.comment_uid}`
+      return res.json({ comment, commentURL, threadURL })
     } catch (err) {
+      console.error('THERE WAS AN ISSUE CREATING A NEW COMMENT', err)
       return res
         .status(403)
         .json({ err, message: 'there was an issue creating a new comment' })
@@ -50,7 +63,7 @@ export const commentsPost = [
   },
 ]
 
-export const threadsPut = [
+export const commentsPut = [
   body('content', 'Content is required').trim().isLength({ min: 1 }),
   body('isPublished', 'boolean value needed').isBoolean(),
   param('threadid', 'missing thread id parameter').notEmpty().isUUID(),

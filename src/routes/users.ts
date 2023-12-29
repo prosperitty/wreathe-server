@@ -1,15 +1,19 @@
 import express from 'express'
 import type { NextFunction, Request, Response, Router } from 'express'
 import { authenticateToken } from '../middlewares/authenticate-token'
-import { usersGet } from '../controllers/users-controller/users-control'
+import {
+  usersGet,
+  usersThreadPage,
+} from '../controllers/users-controller/users-control'
+import { threadsGet } from '../controllers/threads-controller/threads-control'
 const router: Router = express.Router()
 
 /* GET users listing. */
 router.get('/:userId', authenticateToken, usersGet)
 
-router.get('/:userId/threads')
+router.get('/:userId/threads', threadsGet)
 
-router.get('/:userId/threads/:threadId')
+router.get('/:userId/threads/:threadId', usersThreadPage)
 
 router.get('/:userId/threads/:threadId/comments')
 

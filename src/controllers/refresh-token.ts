@@ -1,28 +1,36 @@
 import type { Request, Response } from 'express'
 import jwt = require('jsonwebtoken')
-import { setAccessToken, setRefreshToken } from '../utils/cookie-setter'
+import {
+  setAccessToken,
+  setRefreshToken,
+  setUserData,
+} from '../utils/cookie-setter'
 import { PrismaClient } from '@prisma/client'
+import { RequestUser } from '../utils/types'
 const prisma = new PrismaClient()
 
 export const refreshTokenPost = async (req: Request, res: Response) => {
   const accessToken = req.cookies.accessToken
   const refreshToken = req.cookies.refreshToken
+  const userData = req.cookies.userData
 
   // If we don't have a token in our request
   if (!refreshToken) {
+    res.clearCookie('userData', { path: '/' })
+    console.error('NO REFRESH TOKEN PROVIDED! SIGN IN OR REGISTER NEEDED:')
     return res
       .status(401)
       .json({ error: 'no refresh token provided! Sign in.' })
   }
   if (accessToken) {
-    console.log('access token still exists')
-    return res.json({ accessToken })
+    console.log('ACCESS TOKEN STILL EXISTS!')
+    return res.json({ accessToken, userData })
   }
 
   try {
     // We have a token, let's verify it!
     const secret: string = process.env.JWT_KEY as string
-    const decoded = jwt.verify(refreshToken, secret) as { id: string }
+    const decoded = jwt.verify(refreshToken, secret) as RequestUser
     const userId = decoded.id
 
     // token is valid, check if user exist
@@ -30,11 +38,17 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
       where: { user_uid: userId },
     })
     if (!user) {
+      console.error('USER DOES NOT EXIST! ERROR FINDING USER IN DB')
       return res.status(401).json({ error: 'User does not exist' })
     }
 
     // user exist, check if refreshtoken exist on user
     if (user.refresh_token !== refreshToken) {
+      console.log(user.refresh_token, '\n')
+      console.log(refreshToken, '\n')
+      console.error(
+        'NO REFRESH TOKEN FOUND ON USER! OR REFRESH TOKEN DOES NOT MATCH BROWSER REFRESH TOKEN WITH USERS REFRESH TOKEN!',
+      )
       return res
         .status(401)
         .json({ error: 'The user does not have a refresh token!' })
@@ -52,11 +66,21 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
       data: { refresh_token: newRefreshToken },
     })
 
+    const userData = {
+      user_uid: user.user_uid,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      username: user.username,
+    }
+
     setAccessToken(res, 'accessToken', newAccessToken, 60 * 60 * 1000)
     setRefreshToken(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000)
+    setUserData(res, 'userData', userData, 24 * 60 * 60 * 1000)
 
-    return res.json({ accessToken: newAccessToken })
+    return res.json({ accessToken: newAccessToken, userData })
   } catch (err) {
+    console.error('THERE WAS AN ISSUE REFRESHING THE TOKEN\n', err)
     return res.status(403).json(err)
   }
 }

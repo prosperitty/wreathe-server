@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv/config");
 const authenticateToken = (req, res, next) => {
     if (!req.headers.authorization) {
-        console.log('no headers set ');
+        console.log('NO HEADERS SET');
         return res.status(401).json('No access token provided');
     }
     const accessToken = req.headers.authorization;
@@ -16,6 +16,7 @@ const authenticateToken = (req, res, next) => {
         req.user = decoded;
     }
     catch (err) {
+        console.error('THERE WAS AN ERROR AUTHENTICATING THE TOKEN', err);
         return res.status(403).json({ error: 'expired access token' });
     }
     return next();
