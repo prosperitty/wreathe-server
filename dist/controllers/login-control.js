@@ -55,10 +55,18 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             where: { user_uid: user.user_uid },
             data: { refresh_token: refreshToken },
         });
+        const userData = {
+            user_uid: user.user_uid,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            username: user.username,
+        };
         (0, cookie_setter_1.setAccessToken)(res, 'accessToken', accessToken, 60 * 60 * 1000);
         (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
+        (0, cookie_setter_1.setUserData)(res, 'userData', userData, 24 * 60 * 60 * 1000);
         // Send the access token in the response
-        return res.json({ accessToken, userId: user.user_uid });
+        return res.json({ accessToken, userData });
     }
     catch (err) {
         console.error('THERE WAS IN ISSUE LOGGING IN', err);

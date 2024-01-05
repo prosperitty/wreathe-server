@@ -3,7 +3,11 @@ import bcrypt from 'bcryptjs'
 import jwt = require('jsonwebtoken')
 import 'dotenv/config'
 import { LoginCredentials } from '../utils/types'
-import { setAccessToken, setRefreshToken } from '../utils/cookie-setter'
+import {
+  setAccessToken,
+  setRefreshToken,
+  setUserData,
+} from '../utils/cookie-setter'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
@@ -47,11 +51,20 @@ export const loginPost = async (req: Request, res: Response) => {
       data: { refresh_token: refreshToken },
     })
 
+    const userData = {
+      user_uid: user.user_uid,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      username: user.username,
+    }
+
     setAccessToken(res, 'accessToken', accessToken, 60 * 60 * 1000)
     setRefreshToken(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000)
+    setUserData(res, 'userData', userData, 24 * 60 * 60 * 1000)
 
     // Send the access token in the response
-    return res.json({ accessToken, userId: user.user_uid })
+    return res.json({ accessToken, userData })
   } catch (err) {
     console.error('THERE WAS IN ISSUE LOGGING IN', err)
     return res

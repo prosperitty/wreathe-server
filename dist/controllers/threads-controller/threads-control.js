@@ -27,8 +27,10 @@ const threadsGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             orderBy: { thread_timestamp: 'desc' },
             include: {
                 comment: true,
+                likes: true,
                 wreathe_user: {
                     select: {
+                        user_uid: true,
                         first_name: true,
                         last_name: true,
                         username: true,

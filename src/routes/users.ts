@@ -6,18 +6,40 @@ import {
   usersThreadPage,
 } from '../controllers/users-controller/users-control'
 import { threadsGet } from '../controllers/threads-controller/threads-control'
+import {
+  likeComment,
+  likeThread,
+  unlikeComment,
+  unlikeThread,
+} from '../controllers/threads-controller/like-control'
 const router: Router = express.Router()
 
 /* GET users listing. */
 router.get('/:userId', authenticateToken, usersGet)
 
-router.get('/:userId/threads', threadsGet)
+router.get('/:userId/threads', authenticateToken, threadsGet)
 
-router.get('/:userId/threads/:threadId', usersThreadPage)
+router.get('/:userId/threads/:threadId', authenticateToken, usersThreadPage)
+router.post('/:userId/threads/:threadId/likes', authenticateToken, likeThread)
+router.delete(
+  '/:userId/threads/:threadId/unlike',
+  authenticateToken,
+  unlikeThread,
+)
 
 router.get('/:userId/threads/:threadId/comments')
 
 router.get('/:userId/threads/:threadId/comments/:commentId')
+router.post(
+  '/:userId/threads/:threadId/comments/:commentId/like',
+  authenticateToken,
+  likeComment,
+)
+router.delete(
+  '/:userId/threads/:threadId/comments/:commentId/unlike',
+  authenticateToken,
+  unlikeComment,
+)
 
 router.get('/:userId/likes')
 

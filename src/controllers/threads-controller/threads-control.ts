@@ -17,8 +17,10 @@ export const threadsGet = async (req: Request, res: Response) => {
       orderBy: { thread_timestamp: 'desc' },
       include: {
         comment: true,
+        likes: true,
         wreathe_user: {
           select: {
+            user_uid: true,
             first_name: true,
             last_name: true,
             username: true,

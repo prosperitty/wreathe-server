@@ -3,7 +3,7 @@ import jwt = require('jsonwebtoken')
 import 'dotenv/config'
 import { RequestUser } from '../utils/types'
 
-export const authenticateToken = (
+export const authenticateToken = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -21,7 +21,9 @@ export const authenticateToken = (
     req.user = decoded
   } catch (err) {
     console.error('THERE WAS AN ERROR AUTHENTICATING THE TOKEN', err)
-    return res.status(403).json({ error: 'expired access token' })
+    return res
+      .status(403)
+      .json({ error: 'no access token provided please login.' })
   }
   return next()
 }

@@ -3,16 +3,12 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 /* GET users listing. */
-export const usersGet = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const usersGet = async (req: Request, res: Response) => {
   try {
     const user = req.user
     if (!user) {
       console.error('YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!')
-      const userData = await prisma.wreathe_user.findUnique({
+      const profileData = await prisma.wreathe_user.findUnique({
         where: { user_uid: req.params.userId },
         select: {
           user_uid: true,
@@ -20,11 +16,19 @@ export const usersGet = async (
           last_name: true,
           email: true,
           username: true,
+          thread: true,
+          comment: true,
+          likes: true,
+          comment_likes: true,
+          followers: true,
+          following: true,
         },
       })
-      const userThreads = await prisma.thread.findMany({
+      const profileThreads = await prisma.thread.findMany({
         where: { author_ref: req.params.userId },
         include: {
+          comment: true,
+          likes: true,
           wreathe_user: {
             select: {
               user_uid: true,
@@ -35,46 +39,123 @@ export const usersGet = async (
           },
         },
       })
-      return res
-        .status(401)
-        .json({
-          message: 'YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!',
-          userData,
-          userThreads,
-        })
+      const profileComments = await prisma.comment.findMany({
+        where: { author_ref: req.params.userId, ispublished: true },
+        include: {
+          thread: true,
+          comment_likes: true,
+          wreathe_user: {
+            select: {
+              user_uid: true,
+              first_name: true,
+              last_name: true,
+              username: true,
+            },
+          },
+        },
+      })
+      const profileLikes = await prisma.likes.findMany({
+        where: { user_uid: req.params.userId },
+        include: {
+          thread: {
+            include: {
+              wreathe_user: true,
+              comment: true,
+              likes: true,
+            },
+          },
+        },
+      })
+      return res.status(401).json({
+        message: 'YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!',
+        profileData,
+        profileThreads,
+        profileComments,
+        profileLikes,
+      })
+    } else {
+      const profileData = await prisma.wreathe_user.findUnique({
+        where: { user_uid: req.params.userId.toString() },
+        include: {
+          thread: true,
+          comment: true,
+          likes: true,
+          comment_likes: true,
+          followers: true,
+          following: true,
+        },
+      })
+      const profileThreads = await prisma.thread.findMany({
+        where: { author_ref: req.params.userId },
+        include: {
+          comment: true,
+          likes: true,
+          wreathe_user: {
+            select: {
+              user_uid: true,
+              first_name: true,
+              last_name: true,
+              username: true,
+            },
+          },
+        },
+      })
+      const profileComments = await prisma.comment.findMany({
+        where: { author_ref: req.params.userId, ispublished: true },
+        include: {
+          thread: true,
+          comment_likes: true,
+          wreathe_user: {
+            select: {
+              user_uid: true,
+              first_name: true,
+              last_name: true,
+              username: true,
+            },
+          },
+        },
+      })
+      const profileLikes = await prisma.likes.findMany({
+        where: { user_uid: req.params.userId },
+        include: {
+          thread: {
+            include: {
+              wreathe_user: true,
+              comment: true,
+              likes: true,
+            },
+          },
+        },
+      })
+      return res.json({
+        message: 'PROTECTED ROUTE ACCESSED SUCCESSFULLY',
+        profileData,
+        profileThreads,
+        profileComments,
+        profileLikes,
+      })
     }
   } catch (err) {
     console.error('THERE WAS AN ISSUE RENDERING THIS PAGE', err)
     return res.json({ err, message: 'THERE WAS AN ISSUE RENDERING THIS PAGE!' })
   }
-  const userData = await prisma.wreathe_user.findUnique({
-    where: { user_uid: req.params.userId },
-  })
-  const userThreads = await prisma.thread.findMany({
-    where: { author_ref: req.params.userId },
-    include: {
-      wreathe_user: {
-        select: {
-          user_uid: true,
-          first_name: true,
-          last_name: true,
-          username: true,
-        },
-      },
-    },
-  })
-  return res.json({
-    message: 'PROTECTED ROUTE ACCESSED SUCCESSFULLY',
-    userData,
-    userThreads,
-  })
 }
 
 export const usersThreadPage = async (req: Request, res: Response) => {
+  const user = req.user
+  let isLike = false
   try {
     const thread = await prisma.thread.findUnique({
       where: { thread_uid: req.params.threadId, author_ref: req.params.userId },
       include: {
+        comment: {
+          include: {
+            thread: true,
+            wreathe_user: true,
+            comment_likes: true,
+          },
+        },
+        likes: true,
         wreathe_user: {
           select: {
             user_uid: true,
@@ -83,12 +164,21 @@ export const usersThreadPage = async (req: Request, res: Response) => {
             username: true,
           },
         },
-        // wreathe_user: true,
-        comment: true,
       },
     })
-    console.log(thread, '\n thread ==========================')
-    return res.json({ thread })
+
+    if (user) {
+      const userLike = await prisma.likes.findUnique({
+        where: {
+          user_uid_thread_uid: {
+            user_uid: req.user.id,
+            thread_uid: req.params.threadId,
+          },
+        },
+      })
+      isLike = Boolean(userLike)
+    }
+    return res.json({ thread, isLike })
   } catch (err) {
     console.error('THREAD NOT FOUND OR ISSUE FINDING THREAD')
     return res.json({
