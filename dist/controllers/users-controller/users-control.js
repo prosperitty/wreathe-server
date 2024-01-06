@@ -52,7 +52,11 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const profileComments = yield prisma.comment.findMany({
                 where: { author_ref: req.params.userId, ispublished: true },
                 include: {
-                    thread: true,
+                    thread: {
+                        include: {
+                            wreathe_user: true,
+                        },
+                    },
                     comment_likes: true,
                     wreathe_user: {
                         select: {
@@ -76,12 +80,35 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     },
                 },
             });
+            const profileCommentLikes = yield prisma.comment_likes.findMany({
+                where: { user_uid: req.params.userId },
+                include: {
+                    comment: {
+                        include: {
+                            wreathe_user: true,
+                            thread: {
+                                include: {
+                                    wreathe_user: {
+                                        select: {
+                                            username: true,
+                                        },
+                                    },
+                                },
+                            },
+                            comment_likes: true,
+                        },
+                    },
+                },
+            });
+            const allLikes = [...profileLikes, ...profileComments].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
             return res.status(401).json({
                 message: 'YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!',
                 profileData,
                 profileThreads,
                 profileComments,
                 profileLikes,
+                profileCommentLikes,
+                allLikes,
             });
         }
         else {
@@ -114,7 +141,11 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const profileComments = yield prisma.comment.findMany({
                 where: { author_ref: req.params.userId, ispublished: true },
                 include: {
-                    thread: true,
+                    thread: {
+                        include: {
+                            wreathe_user: true,
+                        },
+                    },
                     comment_likes: true,
                     wreathe_user: {
                         select: {
@@ -138,12 +169,35 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     },
                 },
             });
+            const profileCommentLikes = yield prisma.comment_likes.findMany({
+                where: { user_uid: req.params.userId },
+                include: {
+                    comment: {
+                        include: {
+                            wreathe_user: true,
+                            thread: {
+                                include: {
+                                    wreathe_user: {
+                                        select: {
+                                            username: true,
+                                        },
+                                    },
+                                },
+                            },
+                            comment_likes: true,
+                        },
+                    },
+                },
+            });
+            const allLikes = [...profileLikes, ...profileCommentLikes].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
             return res.json({
                 message: 'PROTECTED ROUTE ACCESSED SUCCESSFULLY',
                 profileData,
                 profileThreads,
                 profileComments,
                 profileLikes,
+                profileCommentLikes,
+                allLikes,
             });
         }
     }
@@ -154,6 +208,7 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.usersGet = usersGet;
 const usersThreadPage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const user = req.user;
     let isLike = false;
     try {
@@ -178,6 +233,7 @@ const usersThreadPage = (req, res) => __awaiter(void 0, void 0, void 0, function
                 },
             },
         });
+        console.log((_a = thread === null || thread === void 0 ? void 0 : thread.wreathe_user) === null || _a === void 0 ? void 0 : _a.username, '==========================username');
         if (user) {
             const userLike = yield prisma.likes.findUnique({
                 where: {

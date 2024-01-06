@@ -42,7 +42,11 @@ export const usersGet = async (req: Request, res: Response) => {
       const profileComments = await prisma.comment.findMany({
         where: { author_ref: req.params.userId, ispublished: true },
         include: {
-          thread: true,
+          thread: {
+            include: {
+              wreathe_user: true,
+            },
+          },
           comment_likes: true,
           wreathe_user: {
             select: {
@@ -66,12 +70,38 @@ export const usersGet = async (req: Request, res: Response) => {
           },
         },
       })
+      const profileCommentLikes = await prisma.comment_likes.findMany({
+        where: { user_uid: req.params.userId },
+        include: {
+          comment: {
+            include: {
+              wreathe_user: true,
+              thread: {
+                include: {
+                  wreathe_user: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                },
+              },
+              comment_likes: true,
+            },
+          },
+        },
+      })
+      const allLikes = [...profileLikes, ...profileComments].sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      )
       return res.status(401).json({
         message: 'YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!',
         profileData,
         profileThreads,
         profileComments,
         profileLikes,
+        profileCommentLikes,
+        allLikes,
       })
     } else {
       const profileData = await prisma.wreathe_user.findUnique({
@@ -103,7 +133,11 @@ export const usersGet = async (req: Request, res: Response) => {
       const profileComments = await prisma.comment.findMany({
         where: { author_ref: req.params.userId, ispublished: true },
         include: {
-          thread: true,
+          thread: {
+            include: {
+              wreathe_user: true,
+            },
+          },
           comment_likes: true,
           wreathe_user: {
             select: {
@@ -127,12 +161,38 @@ export const usersGet = async (req: Request, res: Response) => {
           },
         },
       })
+      const profileCommentLikes = await prisma.comment_likes.findMany({
+        where: { user_uid: req.params.userId },
+        include: {
+          comment: {
+            include: {
+              wreathe_user: true,
+              thread: {
+                include: {
+                  wreathe_user: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                },
+              },
+              comment_likes: true,
+            },
+          },
+        },
+      })
+      const allLikes = [...profileLikes, ...profileCommentLikes].sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      )
       return res.json({
         message: 'PROTECTED ROUTE ACCESSED SUCCESSFULLY',
         profileData,
         profileThreads,
         profileComments,
         profileLikes,
+        profileCommentLikes,
+        allLikes,
       })
     }
   } catch (err) {
@@ -166,6 +226,11 @@ export const usersThreadPage = async (req: Request, res: Response) => {
         },
       },
     })
+
+    console.log(
+      thread?.wreathe_user?.username,
+      '==========================username',
+    )
 
     if (user) {
       const userLike = await prisma.likes.findUnique({
