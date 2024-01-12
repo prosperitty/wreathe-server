@@ -6,6 +6,6 @@ import { threadsGet } from '../controllers/threads-controller/threads-control'
 const router: Router = express.Router()
 
 /* GET home page. */
-router.get('/', authenticateToken, threadsGet)
+router.get('/', authenticateToken, feedGet)
 
 export default router

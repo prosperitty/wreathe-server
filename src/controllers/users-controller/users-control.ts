@@ -7,7 +7,7 @@ export const usersGet = async (req: Request, res: Response) => {
   try {
     const user = req.user
     if (!user) {
-      console.error('YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!')
+      // console.error('YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!')
       const profileData = await prisma.wreathe_user.findUnique({
         where: { user_uid: req.params.userId },
         select: {
@@ -181,6 +181,12 @@ export const usersGet = async (req: Request, res: Response) => {
           },
         },
       })
+      const isFollowing = await prisma.follower.findFirst({
+        where: {
+          followerId: user.id,
+          followingId: req.params.userId,
+        },
+      })
       const allLikes = [...profileLikes, ...profileCommentLikes].sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
@@ -193,6 +199,7 @@ export const usersGet = async (req: Request, res: Response) => {
         profileLikes,
         profileCommentLikes,
         allLikes,
+        isFollowing: !!isFollowing,
       })
     }
   } catch (err) {
@@ -226,11 +233,6 @@ export const usersThreadPage = async (req: Request, res: Response) => {
         },
       },
     })
-
-    console.log(
-      thread?.wreathe_user?.username,
-      '==========================username',
-    )
 
     if (user) {
       const userLike = await prisma.likes.findUnique({

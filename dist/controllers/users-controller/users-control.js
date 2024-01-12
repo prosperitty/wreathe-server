@@ -17,7 +17,7 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = req.user;
         if (!user) {
-            console.error('YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!');
+            // console.error('YOU MUST BE SIGNED IN TO ACCESS THIS ROUTE!')
             const profileData = yield prisma.wreathe_user.findUnique({
                 where: { user_uid: req.params.userId },
                 select: {
@@ -189,6 +189,12 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     },
                 },
             });
+            const isFollowing = yield prisma.follower.findFirst({
+                where: {
+                    followerId: user.id,
+                    followingId: req.params.userId,
+                },
+            });
             const allLikes = [...profileLikes, ...profileCommentLikes].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
             return res.json({
                 message: 'PROTECTED ROUTE ACCESSED SUCCESSFULLY',
@@ -198,6 +204,7 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 profileLikes,
                 profileCommentLikes,
                 allLikes,
+                isFollowing: !!isFollowing,
             });
         }
     }
@@ -208,7 +215,6 @@ const usersGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.usersGet = usersGet;
 const usersThreadPage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const user = req.user;
     let isLike = false;
     try {
@@ -233,7 +239,6 @@ const usersThreadPage = (req, res) => __awaiter(void 0, void 0, void 0, function
                 },
             },
         });
-        console.log((_a = thread === null || thread === void 0 ? void 0 : thread.wreathe_user) === null || _a === void 0 ? void 0 : _a.username, '==========================username');
         if (user) {
             const userLike = yield prisma.likes.findUnique({
                 where: {

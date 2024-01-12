@@ -13,18 +13,52 @@ exports.feedGet = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 /* GET users listing. */
-const feedGet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const feedGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = req.user;
-        if (!user) {
-            console.error('YOU MUST BE SIGNED IN TO ACCESS YOUR FEED!');
-            return res.status(401).json('YOU MUST BE SIGNED IN TO ACCESS YOUR FEED!');
-        }
+        const followingUsers = yield prisma.follower.findMany({
+            where: {
+                followerId: user.id,
+            },
+            select: {
+                followingId: true,
+            },
+        });
+        const threads = yield prisma.thread.findMany({
+            where: {
+                ispublished: true,
+                OR: [
+                    {
+                        author_ref: {
+                            in: followingUsers.map(followedUser => followedUser.followingId),
+                        },
+                    },
+                    {
+                        author_ref: user.id,
+                    },
+                ],
+            },
+            orderBy: {
+                thread_timestamp: 'desc',
+            },
+            include: {
+                comment: true,
+                likes: true,
+                wreathe_user: {
+                    select: {
+                        user_uid: true,
+                        first_name: true,
+                        last_name: true,
+                        username: true,
+                    },
+                },
+            },
+        });
+        return res.json({ threads });
     }
     catch (err) {
-        console.error('THERE WAS AN ISSUE RENDERING THIS PAGE', err);
-        return res.json({ err, message: 'THERE WAS AN ISSUE RENDERING THIS PAGE!' });
+        console.error(err);
+        res.status(403).json({ err, message: 'there was an issue fetching posts' });
     }
-    return res.json({ message: 'PROTECTED ROUTE ACCESSED SUCCESSFULLY' });
 });
 exports.feedGet = feedGet;
