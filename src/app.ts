@@ -14,12 +14,13 @@ import cors from 'cors'
 import compression from 'compression'
 import helmet from 'helmet'
 
+import feedRouter from './routes/feed.js'
 import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
 import loginRouter from './routes/login.js'
-import feedRouter from './routes/feed.js'
 import composeRouter from './routes/compose.js'
 import registerRouter from './routes/register.js'
+import messagesRouter from './routes/messages.js'
 import refreshTokenRouter from './routes/refresh-token.js'
 
 const app: Express = express()
@@ -42,11 +43,12 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, '../public')))
 
 app.use('/', indexRouter)
+app.use('/feed', feedRouter)
 app.use('/users', usersRouter)
 app.use('/login', loginRouter)
-app.use('/feed', feedRouter)
-app.use('/register', registerRouter)
 app.use('/compose', composeRouter)
+app.use('/messages', messagesRouter)
+app.use('/register', registerRouter)
 app.use('/refresh-token', refreshTokenRouter)
 
 // catch 404 and forward to error handler

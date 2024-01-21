@@ -12,12 +12,13 @@ const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
 const compression_1 = __importDefault(require("compression"));
 const helmet_1 = __importDefault(require("helmet"));
+const feed_js_1 = __importDefault(require("./routes/feed.js"));
 const index_js_1 = __importDefault(require("./routes/index.js"));
 const users_js_1 = __importDefault(require("./routes/users.js"));
 const login_js_1 = __importDefault(require("./routes/login.js"));
-const feed_js_1 = __importDefault(require("./routes/feed.js"));
 const compose_js_1 = __importDefault(require("./routes/compose.js"));
 const register_js_1 = __importDefault(require("./routes/register.js"));
+const messages_js_1 = __importDefault(require("./routes/messages.js"));
 const refresh_token_js_1 = __importDefault(require("./routes/refresh-token.js"));
 const app = (0, express_1.default)();
 if (process.env.NODE_ENV !== 'production') {
@@ -34,11 +35,12 @@ app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.static(path_1.default.join(__dirname, '../public')));
 app.use('/', index_js_1.default);
+app.use('/feed', feed_js_1.default);
 app.use('/users', users_js_1.default);
 app.use('/login', login_js_1.default);
-app.use('/feed', feed_js_1.default);
-app.use('/register', register_js_1.default);
 app.use('/compose', compose_js_1.default);
+app.use('/messages', messages_js_1.default);
+app.use('/register', register_js_1.default);
 app.use('/refresh-token', refresh_token_js_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
