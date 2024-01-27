@@ -24,6 +24,14 @@ import messagesRouter from './routes/messages.js'
 import refreshTokenRouter from './routes/refresh-token.js'
 
 const app: Express = express()
+// const server = createServer()
+// const io = new Server(server, {
+//   cors: {
+//     origin: ['http://localhost:3000', 'http://localhost:8080'], // Replace with your frontend URL
+//     // allowedHeaders: ["my-custom-header"],
+//     credentials: true,
+//   },
+// })
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(

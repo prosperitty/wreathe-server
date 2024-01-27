@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const http_errors_1 = __importDefault(require("http-errors"));
+// import { createServer } from 'node:http'
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
@@ -12,6 +13,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
 const compression_1 = __importDefault(require("compression"));
 const helmet_1 = __importDefault(require("helmet"));
+// import { Server } from 'socket.io'
 const feed_js_1 = __importDefault(require("./routes/feed.js"));
 const index_js_1 = __importDefault(require("./routes/index.js"));
 const users_js_1 = __importDefault(require("./routes/users.js"));
@@ -21,6 +23,14 @@ const register_js_1 = __importDefault(require("./routes/register.js"));
 const messages_js_1 = __importDefault(require("./routes/messages.js"));
 const refresh_token_js_1 = __importDefault(require("./routes/refresh-token.js"));
 const app = (0, express_1.default)();
+// const server = createServer()
+// const io = new Server(server, {
+//   cors: {
+//     origin: ['http://localhost:3000', 'http://localhost:8080'], // Replace with your frontend URL
+//     // allowedHeaders: ["my-custom-header"],
+//     credentials: true,
+//   },
+// })
 if (process.env.NODE_ENV !== 'production') {
     app.use((0, cors_1.default)({
         origin: 'http://localhost:3000',
