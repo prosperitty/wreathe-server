@@ -64,7 +64,7 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         };
         (0, cookie_setter_1.setAccessToken)(res, 'accessToken', accessToken, 60 * 60 * 1000);
         (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
-        (0, cookie_setter_1.setUserData)(res, 'userData', userData, 24 * 60 * 60 * 1000);
+        (0, cookie_setter_1.setUserData)(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000);
         // Send the access token in the response
         return res.json({ accessToken, userData });
     }

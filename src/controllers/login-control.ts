@@ -61,7 +61,7 @@ export const loginPost = async (req: Request, res: Response) => {
 
     setAccessToken(res, 'accessToken', accessToken, 60 * 60 * 1000)
     setRefreshToken(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000)
-    setUserData(res, 'userData', userData, 24 * 60 * 60 * 1000)
+    setUserData(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000)
 
     // Send the access token in the response
     return res.json({ accessToken, userData })

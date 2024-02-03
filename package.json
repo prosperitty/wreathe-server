@@ -25,7 +25,8 @@
     "morgan": "~1.9.1",
     "multer": "^1.4.5-lts.1",
     "next-auth": "^4.22.1",
-    "socket.io": "^4.7.4"
+    "socket.io": "^4.7.4",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

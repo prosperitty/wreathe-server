@@ -7,7 +7,8 @@
 const app = require('../dist/app')
 const debug = require('debug')('wreathe-server:server')
 const http = require('http')
-const { Server } = require('socket.io')
+const WebSocket = require('ws')
+// const { Server } = require('socket.io')
 /**
  * Get port from environment and store in Express.
  */
@@ -20,31 +21,67 @@ app.set('port', port)
  */
 
 const server = http.createServer(app)
-const io = new Server(server, {
-  cors: {
-    origin: ['http://localhost:3000', 'http://localhost:8080'], // Replace with your frontend URL
-    // allowedHeaders: ["my-custom-header"],
-    credentials: true,
-  },
-})
+const wss = new WebSocket.Server({ server })
+let clients = new Map()
+
+// const io = new Server(server, {
+//   cors: {
+//     origin: ['http://localhost:3000', 'http://localhost:8080'], // Replace with your frontend URL
+//     // allowedHeaders: ["my-custom-header"],
+//     credentials: true,
+//   },
+// })
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-io.on('connection', socket => {
+wss.on('connection', ws => {
+  ws.on('error', console.error)
+  // Handle WebSocket connections
   console.log('A user connected')
-  // socket.emit('test', 'Socket.io is working on the backend!l')
-  socket.on('send_msg', message => {
-    // Handle incoming messages and broadcast to connected clients
-    console.log('message:', message)
 
-    io.emit('receive_msg', message)
+  ws.on('message', message => {
+    const data = JSON.parse(message)
+    //BUG WEBSOCKET GETS SENT AS A BUFFER
+    console.log('Received message:', data)
+    const { type, roomId, userId, content } = data
+
+    if (type === 'join-room') {
+      clients.set(userId, ws)
+    }
+
+    if (type === 'chat-message') {
+      const targetClient = clients.get(roomId)
+      if (targetClient) {
+        // Handle the message as needed
+        targetClient.send(
+          JSON.stringify({ userId, content, type: 'chat-message' }),
+        )
+      }
+    }
   })
-  socket.on('disconnect', () => {
+
+  ws.on('close', () => {
+    // Handle WebSocket connection closure
     console.log('A user disconnected')
+    clients = new Map()
   })
 })
+
+// io.on('connection', socket => {
+//   console.log('A user connected')
+//   // socket.emit('test', 'Socket.io is working on the backend!l')
+//   socket.on('send_msg', message => {
+//     // Handle incoming messages and broadcast to connected clients
+//     console.log('message:', message)
+
+//     io.emit('receive_msg', message)
+//   })
+//   socket.on('disconnect', () => {
+//     console.log('A user disconnected')
+//   })
+// })
 
 server.listen(port)
 server.on('error', onError)

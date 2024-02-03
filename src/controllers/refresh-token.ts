@@ -76,7 +76,7 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
 
     setAccessToken(res, 'accessToken', newAccessToken, 60 * 60 * 1000)
     setRefreshToken(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000)
-    setUserData(res, 'userData', userData, 24 * 60 * 60 * 1000)
+    setUserData(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000)
 
     return res.json({ accessToken: newAccessToken, userData })
   } catch (err) {

@@ -71,7 +71,7 @@ const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
         };
         (0, cookie_setter_1.setAccessToken)(res, 'accessToken', newAccessToken, 60 * 60 * 1000);
         (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000);
-        (0, cookie_setter_1.setUserData)(res, 'userData', userData, 24 * 60 * 60 * 1000);
+        (0, cookie_setter_1.setUserData)(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000);
         return res.json({ accessToken: newAccessToken, userData });
     }
     catch (err) {

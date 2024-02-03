@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const http_errors_1 = __importDefault(require("http-errors"));
-// import { createServer } from 'node:http'
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
@@ -13,7 +12,6 @@ const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
 const compression_1 = __importDefault(require("compression"));
 const helmet_1 = __importDefault(require("helmet"));
-// import { Server } from 'socket.io'
 const feed_js_1 = __importDefault(require("./routes/feed.js"));
 const index_js_1 = __importDefault(require("./routes/index.js"));
 const users_js_1 = __importDefault(require("./routes/users.js"));
