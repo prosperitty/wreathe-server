@@ -1,4 +1,4 @@
-import type { Request, Response, Router } from 'express'
+import type { NextFunction, Request, Response, Router } from 'express'
 import express from 'express'
 import { authenticateToken } from '../middlewares/authenticate-token'
 import { feedGet } from '../controllers/feed-control'

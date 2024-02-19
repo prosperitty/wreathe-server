@@ -38,26 +38,65 @@ let clients = new Map()
 
 wss.on('connection', ws => {
   ws.on('error', console.error)
+  let userId
+  let roomId
   // Handle WebSocket connections
   console.log('A user connected')
 
   ws.on('message', message => {
-    const data = JSON.parse(message)
+    const data = JSON.parse(message.toString())
     //BUG WEBSOCKET GETS SENT AS A BUFFER
     console.log('Received message:', data)
-    const { type, roomId, userId, content } = data
+    const { type, recepientId, content } = data
+    userId = data.userId
+    roomId = data.roomId
 
     if (type === 'join-room') {
-      clients.set(userId, ws)
+      if (!clients.has(roomId)) {
+        // If the room doesn't exist, create it and associate the WebSocket connection
+        clients.set(roomId, new Map())
+      }
+      const room = clients.get(roomId)
+      if (room) {
+        // Associate the WebSocket connection with the user ID within the room
+        room.set(userId, ws)
+        // Notify other user that this user has connected
+        room.forEach((client, clientId) => {
+          if (clientId === userId) {
+            client.send(
+              JSON.stringify({
+                type: 'connection-message',
+                content: 'You have connected',
+                userId,
+              }),
+            )
+          } else {
+            client.send(
+              JSON.stringify({
+                type: 'connection-message',
+                content: `${userId} has connected`,
+                userId,
+              }),
+            )
+          }
+        })
+      }
+      // Associate the WebSocket connection with the user ID within the room
+      // clients.get(roomId).set(userId, ws)
     }
 
     if (type === 'chat-message') {
-      const targetClient = clients.get(roomId)
-      if (targetClient) {
-        // Handle the message as needed
-        targetClient.send(
-          JSON.stringify({ userId, content, type: 'chat-message' }),
-        )
+      const room = clients.get(roomId)
+      if (room) {
+        // Send the message to all users in the room except the sender
+        room.forEach((client, clientId) => {
+          console.log(
+            clientId,
+            '\n==============================================',
+          )
+
+          client.send(JSON.stringify({ userId, content, type: 'chat-message' }))
+        })
       }
     }
   })
@@ -65,7 +104,38 @@ wss.on('connection', ws => {
   ws.on('close', () => {
     // Handle WebSocket connection closure
     console.log('A user disconnected')
-    clients = new Map()
+
+    if (userId) {
+      if (clients.has(roomId)) {
+        // If the room doesn't exist, create it and associate the WebSocket connection
+        const room = clients.get(roomId)
+        if (room.has(userId)) {
+          room.forEach((client, clientId) => {
+            if (clientId !== userId) {
+              if (clientId === userId) {
+                client.send(
+                  JSON.stringify({
+                    type: 'connection-message',
+                    content: 'You have disconnected',
+                    userId,
+                  }),
+                )
+              } else {
+                client.send(
+                  JSON.stringify({
+                    type: 'connection-message',
+                    content: `${userId} has disconnected`,
+                    userId,
+                  }),
+                )
+              }
+            }
+          })
+        }
+        //if room exists
+        //delete room from Map
+      }
+    }
   })
 })
 
