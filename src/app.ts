@@ -18,6 +18,7 @@ import feedRouter from './routes/feed.js'
 import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
 import loginRouter from './routes/login.js'
+import searchRouter from './routes/search.js'
 import composeRouter from './routes/compose.js'
 import registerRouter from './routes/register.js'
 import messagesRouter from './routes/messages.js'
@@ -54,6 +55,7 @@ app.use('/', indexRouter)
 app.use('/feed', feedRouter)
 app.use('/users', usersRouter)
 app.use('/login', loginRouter)
+app.use('/search', searchRouter)
 app.use('/compose', composeRouter)
 app.use('/messages', messagesRouter)
 app.use('/register', registerRouter)

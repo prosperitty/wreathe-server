@@ -1,7 +1,10 @@
 import type { Request, Response, Router } from 'express'
 import express from 'express'
 import { authenticateToken } from '../middlewares/authenticate-token'
-import { inboxGet } from '../controllers/messages-controller/inbox-control'
+import {
+  inboxGet,
+  inboxSearch,
+} from '../controllers/messages-controller/inbox-control'
 import {
   chatGet,
   messageDelete,
