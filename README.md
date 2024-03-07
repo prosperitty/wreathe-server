@@ -1,4 +1,4 @@
-# Wreathe (Client)
+# Wreathe (Server)
 
 Wreathe is a social app specifically for market participants to discuss financial analysis and price action in markets. In this repository, contains the server-side code for building RESTful API's.
 
