@@ -1,5 +1,7 @@
 # Wreathe (Server)
 
+[Wreathe Client Repository](https://github.com/alex-lvl/wreathe)
+
 Wreathe is a social app specifically for market participants to discuss financial analysis and price action in markets. In this repository, contains the server-side code for building RESTful API's.
 
 The technology used to build the server-side are Express(Node.js Framework), Typescript(Typechecker), and Prisma(ORM), Websockets(Websocket API), Express Validator, and JWT.
