@@ -4,25 +4,25 @@
  * Module dependencies.
  */
 
-const app = require('../dist/app')
-const debug = require('debug')('wreathe-server:server')
-const http = require('http')
-const WebSocket = require('ws')
+const app = require('../dist/app');
+const debug = require('debug')('wreathe-server:server');
+const http = require('http');
+const WebSocket = require('ws');
 // const { Server } = require('socket.io')
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '8080')
-app.set('port', port)
+const port = normalizePort(process.env.PORT || '8080');
+app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-const server = http.createServer(app)
-const wss = new WebSocket.Server({ server })
-let clients = new Map()
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+let clients = new Map();
 
 // const io = new Server(server, {
 //   cors: {
@@ -37,31 +37,32 @@ let clients = new Map()
  */
 
 wss.on('connection', ws => {
-  ws.on('error', console.error)
-  let userId
-  let roomId
+  ws.on('error', console.error);
+  let userId;
+  let roomId;
   // Handle WebSocket connections
-  console.log('A user connected')
+  console.log('A user is connecting...');
 
   ws.on('message', message => {
-    const data = JSON.parse(message.toString())
-    //BUG WEBSOCKET GETS SENT AS A BUFFER
-    console.log('Received message:', data)
-    const { type, recepientId, content } = data
-    userId = data.userId
-    roomId = data.roomId
+    //Parse the message to a string to convert from a Buffer
+    const data = JSON.parse(message.toString());
+    const { type, content } = data;
+    console.log('Received message:', data);
+    userId = data.userId;
+    roomId = data.roomId;
 
     if (type === 'join-room') {
+      // If the chatRoom doesn't exist, create it and associate the WebSocket connection
       if (!clients.has(roomId)) {
-        // If the room doesn't exist, create it and associate the WebSocket connection
-        clients.set(roomId, new Map())
+        clients.set(roomId, new Map());
       }
-      const room = clients.get(roomId)
-      if (room) {
-        // Associate the WebSocket connection with the user ID within the room
-        room.set(userId, ws)
+      const chatRoom = clients.get(roomId);
+
+      if (chatRoom) {
+        // Associate the WebSocket connection with the user ID within the chatRoom
+        chatRoom.set(userId, ws);
         // Notify other user that this user has connected
-        room.forEach((client, clientId) => {
+        chatRoom.forEach((client, clientId) => {
           if (clientId === userId) {
             client.send(
               JSON.stringify({
@@ -69,7 +70,7 @@ wss.on('connection', ws => {
                 content: 'You have connected',
                 userId,
               }),
-            )
+            );
           } else {
             client.send(
               JSON.stringify({
@@ -77,41 +78,50 @@ wss.on('connection', ws => {
                 content: `${userId} has connected`,
                 userId,
               }),
-            )
+            );
           }
-        })
+        });
       }
-      // Associate the WebSocket connection with the user ID within the room
-      // clients.get(roomId).set(userId, ws)
     }
 
     if (type === 'chat-message') {
-      const room = clients.get(roomId)
-      if (room) {
-        // Send the message to all users in the room except the sender
-        room.forEach((client, clientId) => {
+      const chatRoom = clients.get(roomId);
+
+      if (chatRoom) {
+        // Send the message to all users in the chatRoom except the sender
+        chatRoom.forEach((client, clientId) => {
           console.log(
             clientId,
             '\n==============================================',
-          )
+          );
 
-          client.send(JSON.stringify({ userId, content, type: 'chat-message' }))
-        })
+          client.send(
+            JSON.stringify({ userId, content, type: 'chat-message' }),
+          );
+        });
       }
     }
-  })
+  });
 
   ws.on('close', () => {
     // Handle WebSocket connection closure
-    console.log('A user disconnected')
+    if (userId && clients.has(roomId)) {
+      // If the chatRoom exists, find the chatRoom by roomId
+      const chatRoom = clients.get(roomId);
 
-    if (userId) {
-      if (clients.has(roomId)) {
-        // If the room doesn't exist, create it and associate the WebSocket connection
-        const room = clients.get(roomId)
-        if (room.has(userId)) {
-          room.forEach((client, clientId) => {
+      if (chatRoom.has(userId)) {
+        console.log(`Deleting chat room. user: ${userId}`);
+        chatRoom.delete(userId);
+        console.log(`Chat room has been deleted. user: ${userId}`);
+
+        if (chatRoom.size === 0) {
+          clients.delete(roomId);
+          console.log(`Client connection has been closed. room: ${roomId}`);
+        } else {
+          chatRoom.forEach((client, clientId) => {
+            // If the clientId does not equal the disconnected user userId
             if (clientId !== userId) {
+              //If the clientId equals the non disconnected user userId
               if (clientId === userId) {
                 client.send(
                   JSON.stringify({
@@ -119,7 +129,7 @@ wss.on('connection', ws => {
                     content: 'You have disconnected',
                     userId,
                   }),
-                )
+                );
               } else {
                 client.send(
                   JSON.stringify({
@@ -127,17 +137,15 @@ wss.on('connection', ws => {
                     content: `${userId} has disconnected`,
                     userId,
                   }),
-                )
+                );
               }
             }
-          })
+          });
         }
-        //if room exists
-        //delete room from Map
       }
     }
-  })
-})
+  });
+});
 
 // io.on('connection', socket => {
 //   console.log('A user connected')
@@ -153,28 +161,28 @@ wss.on('connection', ws => {
 //   })
 // })
 
-server.listen(port)
-server.on('error', onError)
-server.on('listening', onListening)
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-  const port = parseInt(val, 10)
+  const port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
-    return val
+    return val;
   }
 
   if (port >= 0) {
     // port number
-    return port
+    return port;
   }
 
-  return false
+  return false;
 }
 
 /**
@@ -183,23 +191,23 @@ function normalizePort(val) {
 
 function onError(error) {
   if (error.syscall !== 'listen') {
-    throw error
+    throw error;
   }
 
-  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges')
-      process.exit(1)
-      break
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use')
-      process.exit(1)
-      break
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
     default:
-      throw error
+      throw error;
   }
 }
 
@@ -208,7 +216,7 @@ function onError(error) {
  */
 
 function onListening() {
-  const addr = server.address()
-  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
-  debug('Listening on ' + bind)
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  debug('Listening on ' + bind);
 }

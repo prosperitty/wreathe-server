@@ -14,6 +14,8 @@ const jwt = require("jsonwebtoken");
 const cookie_setter_1 = require("../utils/cookie-setter");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
+const secret = process.env.JWT_KEY;
+const encodedKey = new TextEncoder().encode(secret);
 const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
@@ -32,8 +34,7 @@ const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
     try {
         // We have a token, let's verify it!
-        const secret = process.env.JWT_KEY;
-        const decoded = jwt.verify(refreshToken, secret);
+        const decoded = jwt.verify(refreshToken, encodedKey);
         const userId = decoded.id;
         // token is valid, check if user exist
         const user = yield prisma.wreathe_user.findUnique({
@@ -54,8 +55,8 @@ const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
         // token exist, create new Refresh- and accesstoken
         const payload = { id: user.user_uid, username: user.username };
-        const newAccessToken = jwt.sign(payload, secret, { expiresIn: '1h' });
-        const newRefreshToken = jwt.sign(payload, secret, { expiresIn: '1d' });
+        const newAccessToken = jwt.sign(payload, encodedKey, { expiresIn: '1h' });
+        const newRefreshToken = jwt.sign(payload, encodedKey, { expiresIn: '1d' });
         // update refreshtoken on user in db
         // Could have different versions instead!
         yield prisma.wreathe_user.update({

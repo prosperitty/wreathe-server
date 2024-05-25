@@ -23,6 +23,8 @@ const loginGet = (req, res) => {
     res.send('login page');
 };
 exports.loginGet = loginGet;
+const secret = process.env.JWT_KEY;
+const encodedKey = new TextEncoder().encode(secret);
 const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
@@ -46,10 +48,9 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(401).json({ error: 'PASSWORD DOES NOT MATCH' });
         }
         //Refresh token
-        const secret = process.env.JWT_KEY;
         const payload = { id: user.user_uid, username: user.username };
-        const accessToken = jwt.sign(payload, secret, { expiresIn: '1h' });
-        const refreshToken = jwt.sign(payload, secret, { expiresIn: '1d' });
+        const accessToken = jwt.sign(payload, encodedKey, { expiresIn: '1h' });
+        const refreshToken = jwt.sign(payload, encodedKey, { expiresIn: '1d' });
         //add refreshToken to user and store in DB?
         yield prisma.wreathe_user.update({
             where: { user_uid: user.user_uid },

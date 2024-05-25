@@ -93,14 +93,14 @@ exports.settingsPost = [
             });
             if (!existingUsername) {
                 console.error('USERNAME IS ALREADY TAKEN');
-                return res.status(404).json({ error: 'Username is already taken' });
+                return res.status(400).json({ error: 'Username is already taken' });
             }
             const existingEmail = yield prisma.wreathe_user.findUnique({
                 where: { email: req.body.email },
             });
             if (!existingEmail) {
                 console.error('EMAIL IS ALREADY TAKEN');
-                return res.status(404).json({ error: 'Email is already taken' });
+                return res.status(400).json({ error: 'Email is already taken' });
             }
             if (req.body.password) {
                 const newPassword = req.body.password;
