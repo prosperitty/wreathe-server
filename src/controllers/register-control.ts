@@ -11,12 +11,12 @@ export const registerGet = (req: Request, res: Response) => {
 }
 
 export const registerPost = [
-  body('firstName', 'First name is required')
+  body('first_name', 'First name is required')
     .trim()
     .isLength({ min: 1, max: 30 })
     .notEmpty()
     .withMessage('Can not be empty. Maximum characters is 30.'),
-  body('lastName', 'Last name is required')
+  body('last_name', 'Last name is required')
     .trim()
     .isLength({ min: 1, max: 30 })
     .notEmpty()
@@ -41,13 +41,15 @@ export const registerPost = [
 
   async (req: Request, res: Response) => {
     const errors = validationResult(req)
-    const { firstName, lastName, username, password, email }: NewUser = req.body
+    const { first_name, last_name, username, password, email }: NewUser =
+      req.body
+    console.log(req.body)
 
     if (!errors.isEmpty()) {
       console.error('VALIDATION FAILURE:', errors.array())
       return res.json({
-        firstName,
-        lastName,
+        first_name,
+        last_name,
         username,
         password,
         email,
@@ -56,17 +58,15 @@ export const registerPost = [
     }
 
     // Validate user input
-    if (!(firstName && lastName && email && username && password)) {
-      return res
-        .status(400)
-        .json({
-          firstName,
-          lastName,
-          username,
-          password,
-          email,
-          message: 'All input is required',
-        })
+    if (!(first_name && last_name && email && username && password)) {
+      return res.status(400).json({
+        first_name,
+        last_name,
+        username,
+        password,
+        email,
+        message: 'All input is required',
+      })
     }
 
     try {
@@ -93,8 +93,8 @@ export const registerPost = [
       const encryptedPassword = await bcrypt.hash(password, 10)
       await prisma.wreathe_user.create({
         data: {
-          first_name: firstName,
-          last_name: lastName,
+          first_name: first_name,
+          last_name: last_name,
           email: email,
           username: username,
           user_password: encryptedPassword,
@@ -111,8 +111,8 @@ export const registerPost = [
 ]
 
 // const user: NewUser = {
-//   firstName,
-//   lastName,
+//   first_name,
+//   last_name,
 //   email,
 //   password: encryptedPassword,
 // }

@@ -30,7 +30,7 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { username, password } = req.body;
         if (!(username && password)) {
             console.error('MISSING CREDENTIALS!');
-            return res.status(400).json({ message: 'MISSING CREDENTIALS' });
+            return res.status(400).json({ errorMessage: 'MISSING CREDENTIALS' });
         }
         // Authenticate the user by fetching user from DB by username(username)
         const user = yield prisma.wreathe_user.findUnique({
@@ -39,13 +39,17 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             },
         });
         if (!user) {
-            console.error('USER DOES NOT EXIST!');
-            return res.status(401).json({ error: 'USER DOES NOT EXIST!' });
+            console.error('INVALID USERNAME OR PASSWORD');
+            return res
+                .status(401)
+                .json({ errorMessage: 'INVALID USERNAME OR PASSWORD' });
         }
         const passwordMatch = yield bcryptjs_1.default.compare(password, user.user_password);
         if (!passwordMatch) {
-            console.error('PASSWORD DOES NOT MATCH!');
-            return res.status(401).json({ error: 'PASSWORD DOES NOT MATCH' });
+            console.error('INVALID USERNAME OR PASSWORD');
+            return res
+                .status(401)
+                .json({ errorMessage: 'INVALID USERNAME OR PASSWORD' });
         }
         //Refresh token
         const payload = { id: user.user_uid, username: user.username };
@@ -67,13 +71,13 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
         (0, cookie_setter_1.setUserData)(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000);
         // Send the access token in the response
-        return res.json({ accessToken, userData });
+        return res.json({ accessToken, userData, refreshToken });
     }
-    catch (err) {
-        console.error('THERE WAS IN ISSUE LOGGING IN', err);
+    catch (error) {
+        console.error('THERE WAS IN ISSUE SIGNING IN', error);
         return res
             .status(403)
-            .json({ err, message: 'There was an issue logging in' });
+            .json({ error, errorMessage: `THERE WAS AN ISSUE SIGNING IN: ${error}` });
     }
 });
 exports.loginPost = loginPost;

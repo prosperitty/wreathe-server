@@ -23,12 +23,12 @@ const registerGet = (req, res) => {
 };
 exports.registerGet = registerGet;
 exports.registerPost = [
-    (0, express_validator_1.body)('firstName', 'First name is required')
+    (0, express_validator_1.body)('first_name', 'First name is required')
         .trim()
         .isLength({ min: 1, max: 30 })
         .notEmpty()
         .withMessage('Can not be empty. Maximum characters is 30.'),
-    (0, express_validator_1.body)('lastName', 'Last name is required')
+    (0, express_validator_1.body)('last_name', 'Last name is required')
         .trim()
         .isLength({ min: 1, max: 30 })
         .notEmpty()
@@ -52,12 +52,13 @@ exports.registerPost = [
         .isLength({ max: 100 }),
     (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const errors = (0, express_validator_1.validationResult)(req);
-        const { firstName, lastName, username, password, email } = req.body;
+        const { first_name, last_name, username, password, email } = req.body;
+        console.log(req.body);
         if (!errors.isEmpty()) {
             console.error('VALIDATION FAILURE:', errors.array());
             return res.json({
-                firstName,
-                lastName,
+                first_name,
+                last_name,
                 username,
                 password,
                 email,
@@ -65,12 +66,10 @@ exports.registerPost = [
             });
         }
         // Validate user input
-        if (!(firstName && lastName && email && username && password)) {
-            return res
-                .status(400)
-                .json({
-                firstName,
-                lastName,
+        if (!(first_name && last_name && email && username && password)) {
+            return res.status(400).json({
+                first_name,
+                last_name,
                 username,
                 password,
                 email,
@@ -101,8 +100,8 @@ exports.registerPost = [
             const encryptedPassword = yield bcryptjs_1.default.hash(password, 10);
             yield prisma.wreathe_user.create({
                 data: {
-                    first_name: firstName,
-                    last_name: lastName,
+                    first_name: first_name,
+                    last_name: last_name,
                     email: email,
                     username: username,
                     user_password: encryptedPassword,
@@ -118,8 +117,8 @@ exports.registerPost = [
     }),
 ];
 // const user: NewUser = {
-//   firstName,
-//   lastName,
+//   first_name,
+//   last_name,
 //   email,
 //   password: encryptedPassword,
 // }
