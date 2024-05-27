@@ -26,8 +26,8 @@ const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             where: { user_uid: userId },
             data: { refresh_token: null },
         });
-        //bug, can not logout without using /refresh-token path because cookie can only be retrieved from this path
-        res.clearCookie('refreshToken', { path: '/refresh-token' });
+        //bug, can not logout without using /logout path because cookie can only be retrieved from this path
+        res.clearCookie('refreshToken', { path: '/logout' });
         res.clearCookie('accessToken', { path: '/' });
         res.clearCookie('userData', { path: '/' });
         return res.json({

@@ -12,7 +12,7 @@ export const setRefreshToken = (
       secure: false,
       sameSite: 'lax',
       maxAge,
-      path: '/refresh-token',
+      path: '/logout',
     }
     return res.cookie(name, token, options)
   } else if (process.env.NODE_ENV === 'production') {
@@ -21,7 +21,7 @@ export const setRefreshToken = (
       secure: true,
       sameSite: 'strict',
       maxAge,
-      path: '/refresh-token',
+      path: '/logout',
     }
     return res.cookie(name, token, options)
   }

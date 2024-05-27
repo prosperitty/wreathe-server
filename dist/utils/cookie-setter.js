@@ -8,7 +8,7 @@ const setRefreshToken = (res, name, token, maxAge) => {
             secure: false,
             sameSite: 'lax',
             maxAge,
-            path: '/refresh-token',
+            path: '/logout',
         };
         return res.cookie(name, token, options);
     }
@@ -18,7 +18,7 @@ const setRefreshToken = (res, name, token, maxAge) => {
             secure: true,
             sameSite: 'strict',
             maxAge,
-            path: '/refresh-token',
+            path: '/logout',
         };
         return res.cookie(name, token, options);
     }
