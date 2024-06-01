@@ -1,6 +1,6 @@
 export interface NewUser {
-  firstName: string
-  lastName: string
+  first_name: string
+  last_name: string
   email: string
   username: string
   password: string
@@ -13,6 +13,14 @@ export interface User {
   email: string
   password: string
   refreshToken: string
+}
+
+interface UserData {
+  user_uid: string
+  first_name: string
+  last_name: string
+  email: string | null
+  username: string
 }
 
 export interface RequestUser {

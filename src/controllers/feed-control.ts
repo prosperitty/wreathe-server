@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from 'express'
+import type { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
@@ -20,7 +20,9 @@ export const feedGet = async (req: Request, res: Response) => {
         OR: [
           {
             author_ref: {
-              in: followingUsers.map(followedUser => followedUser.followingId),
+              in: followingUsers.map(
+                (followedUser) => followedUser.followingId,
+              ),
             },
           },
           {
@@ -44,9 +46,19 @@ export const feedGet = async (req: Request, res: Response) => {
         },
       },
     })
-    return res.json({ threads })
+    return res.json({
+      success: true,
+      message: 'SUCCESSFULLY FETCHED FEED',
+      threads,
+    })
   } catch (err) {
     console.error(err)
-    res.status(403).json({ err, message: 'there was an issue fetching posts' })
+    res
+      .status(403)
+      .json({
+        err,
+        success: false,
+        message: 'there was an issue fetching posts',
+      })
   }
 }

@@ -28,9 +28,17 @@ export const threadsGet = async (req: Request, res: Response) => {
         },
       },
     })
-    return res.json({ threads })
+    return res.json({
+      success: true,
+      message: 'SUCCESSFULLY FETCHED THREAD',
+      threads,
+    })
   } catch (err) {
-    res.status(403).json({ err, message: 'there was an issue fetching posts' })
+    res.status(403).json({
+      err,
+      success: false,
+      message: 'there was an issue fetching posts',
+    })
   }
 }
 
@@ -41,7 +49,6 @@ export const threadsPost = [
     .notEmpty()
     .withMessage('Content can not be an empty space'),
   // body('isPublished', 'boolean value needed').isBoolean(),
-  // body('userUid', 'missing a user id reference').isUUID(),
 
   async (req: Request, res: Response) => {
     const errors = validationResult(req)
@@ -61,12 +68,19 @@ export const threadsPost = [
         data: threadData,
       })
       const threadURL = `${req.user.id}/threads/${thread.thread_uid}`
-      return res.json({ thread, threadURL })
+      return res.json({
+        success: true,
+        message: 'SUCCESSFULLY SUBMITTED THREAD',
+        thread,
+        threadURL,
+      })
     } catch (err) {
       console.error('THERE WAS AN ISSUE CREATING A NEW POST', err)
-      return res
-        .status(403)
-        .json({ err, message: 'there was an issue creating a new post' })
+      return res.status(403).json({
+        err,
+        success: false,
+        message: 'there was an issue creating a new post',
+      })
     }
   },
 ]
@@ -93,11 +107,20 @@ export const threadsPut = [
         data: threadData,
       })
       const threadURL = `/threads/${thread.thread_uid}`
-      return res.json({ thread, threadURL })
+      return res.json({
+        success: true,
+        message: 'SUCCESSFULLY UPDATED THREAD',
+        thread,
+        threadURL,
+      })
     } catch (err) {
       return res
         .status(403)
-        .json({ err, message: 'there was an issue creating a new post' })
+        .json({
+          err,
+          success: false,
+          message: 'there was an issue creating a new post',
+        })
     }
   },
 ]
@@ -107,22 +130,28 @@ export const threadsDelete = async (req: Request, res: Response) => {
     // const thread = await prisma.thread.findUniqueOrThrow({
     //   where: { thread_uid: req.params.threadid },
     // })
-    try {
-      // const deletedImage = await cloudinary.uploader.destroy(
-      //   thread.image.public_url,
-      //   { invalidate: true },
-      // )
-      const deletedThread = await prisma.thread.delete({
-        where: { thread_uid: req.params.threadid },
-      })
-      // console.log(deletedImage, '\n cloudinary image deleted')
-      console.log(deletedThread, '\n Thread has been deleted')
+    // const deletedImage = await cloudinary.uploader.destroy(
+    //   thread.image.public_url,
+    //   { invalidate: true },
+    // )
+    const deletedThread = await prisma.thread.delete({
+      where: { thread_uid: req.params.threadid },
+    })
+    // console.log(deletedImage, '\n cloudinary image deleted')
+    console.log(deletedThread, '\n Thread has been deleted')
 
-      return res.json({ deletedThread })
-    } catch (err) {
-      res.status(403).json({ err, message: 'there was an deleting the post.' })
-    }
+    return res.json({
+      success: true,
+      message: 'SUCCESSFULLY DELETED THREAD',
+      deletedThread,
+    })
   } catch (err) {
-    res.status(403).json({ err, message: 'there was an issue fetching posts' })
+    res
+      .status(403)
+      .json({
+        err,
+        success: false,
+        message: 'there was an issue fetching posts',
+      })
   }
 }

@@ -54,18 +54,10 @@ export const setAccessToken = (
   }
 }
 
-interface UserData {
-  user_uid: string
-  first_name: string
-  last_name: string
-  email: string | null
-  username: string
-}
-
 export const setUserData = (
   res: Response,
   name: string,
-  userData: UserData,
+  userData: string,
   maxAge: number,
 ) => {
   if (process.env.NODE_ENV !== 'production') {

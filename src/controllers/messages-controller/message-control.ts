@@ -123,9 +123,10 @@ export const messagePost = [
     }
   },
 ]
-export const messageDelete = (req: Request, res: Response) => {
-  console.log(req.params)
-}
-export const messagePut = (req: Request, res: Response) => {
-  console.log(req.params)
-}
+
+// export const messageDelete = (req: Request, res: Response) => {
+//   console.log(req.params)
+// }
+// export const messagePut = (req: Request, res: Response) => {
+//   console.log(req.params)
+// }

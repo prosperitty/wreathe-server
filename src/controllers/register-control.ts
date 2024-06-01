@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+// eslint-disable-next-line import/default
 import bcrypt from 'bcryptjs'
 import { NewUser } from '../utils/types'
 import 'dotenv/config'
@@ -43,7 +44,6 @@ export const registerPost = [
     const errors = validationResult(req)
     const { first_name, last_name, username, password, email }: NewUser =
       req.body
-    console.log(req.body)
 
     if (!errors.isEmpty()) {
       console.error('VALIDATION FAILURE:', errors.array())
@@ -70,7 +70,7 @@ export const registerPost = [
     }
 
     try {
-      // Validate if user exist in our databaseS
+      // Validate if user exist in our database
       const found_username = await prisma.wreathe_user.findUnique({
         where: { username },
         select: { username: true },
@@ -101,18 +101,15 @@ export const registerPost = [
         },
       })
 
-      return res.json({ message: 'user successfully created' })
+      return res.json({ success: true, message: 'user successfully created' })
     } catch (err) {
       return res
         .status(403)
-        .json({ err, message: 'There was an issue registering a new user' })
+        .json({
+          err,
+          success: false,
+          message: 'There was an issue registering a new user',
+        })
     }
   },
 ]
-
-// const user: NewUser = {
-//   first_name,
-//   last_name,
-//   email,
-//   password: encryptedPassword,
-// }

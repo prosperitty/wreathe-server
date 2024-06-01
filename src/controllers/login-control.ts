@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+// eslint-disable-next-line import/default
 import bcrypt from 'bcryptjs'
 import jwt = require('jsonwebtoken')
 import 'dotenv/config'
@@ -15,8 +16,8 @@ export const loginGet = (req: Request, res: Response) => {
   res.send('login page')
 }
 
-const secret: string = process.env.JWT_KEY as string
-const encodedKey = new TextEncoder().encode(secret)
+const secretKey: string = process.env.JWT_KEY as string
+// const encodedKey = new TextEncoder().encode(secret)
 
 export const loginPost = async (req: Request, res: Response) => {
   try {
@@ -48,8 +49,8 @@ export const loginPost = async (req: Request, res: Response) => {
 
     //Refresh token
     const payload = { id: user.user_uid, username: user.username }
-    const accessToken = jwt.sign(payload, encodedKey, { expiresIn: '1h' })
-    const refreshToken = jwt.sign(payload, encodedKey, { expiresIn: '1d' })
+    const accessToken = jwt.sign(payload, secretKey, { expiresIn: '1h' })
+    const refreshToken = jwt.sign(payload, secretKey, { expiresIn: '1d' })
 
     //add refreshToken to user and store in DB?
     await prisma.wreathe_user.update({
