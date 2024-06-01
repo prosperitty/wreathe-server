@@ -41,6 +41,13 @@ if (process.env.NODE_ENV !== 'production') {
       credentials: true,
     }),
   )
+} else {
+  app.use(
+    cors({
+      origin: 'https://wreathe.vercel.app/',
+      credentials: true,
+    }),
+  )
 }
 
 app.use(helmet())
