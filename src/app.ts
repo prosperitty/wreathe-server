@@ -25,14 +25,14 @@ import registerRouter from './routes/register.js'
 import messagesRouter from './routes/messages.js'
 
 const app: Express = express()
-// const server = createServer()
-// const io = new Server(server, {
-//   cors: {
-//     origin: ['http://localhost:3000', 'http://localhost:8080'], // Replace with your frontend URL
-//     // allowedHeaders: ["my-custom-header"],
-//     credentials: true,
-//   },
-// })
+
+app.use(helmet())
+app.use(compression())
+app.use(logger('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, '../public')))
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(
@@ -45,18 +45,11 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(
     cors({
       origin: 'https://wreathe.vercel.app',
+      methods: 'GET,POST,PUT,DELETE',
       credentials: true,
     }),
   )
 }
-
-app.use(helmet())
-app.use(compression())
-app.use(logger('dev'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
-app.use(express.static(path.join(__dirname, '../public')))
 
 app.use('/', indexRouter)
 app.use('/feed', feedRouter)
@@ -89,3 +82,12 @@ app.use(function (
 })
 
 module.exports = app
+
+// const server = createServer()
+// const io = new Server(server, {
+//   cors: {
+//     origin: ['http://localhost:3000', 'http://localhost:8080'], // Replace with your frontend URL
+//     // allowedHeaders: ["my-custom-header"],
+//     credentials: true,
+//   },
+// })
