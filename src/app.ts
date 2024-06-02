@@ -44,7 +44,7 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   app.use(
     cors({
-      origin: 'https://wreathe.vercel.app/',
+      origin: 'https://wreathe.vercel.app',
       credentials: true,
     }),
   )
