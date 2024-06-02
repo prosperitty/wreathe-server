@@ -25,14 +25,7 @@ import registerRouter from './routes/register.js'
 import messagesRouter from './routes/messages.js'
 
 const app: Express = express()
-
 app.use(helmet())
-app.use(compression())
-app.use(logger('dev'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
-app.use(express.static(path.join(__dirname, '../public')))
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(
@@ -42,23 +35,30 @@ if (process.env.NODE_ENV !== 'production') {
     }),
   )
 } else {
-  // app.use(
-  //   cors({
-  //     origin: 'https://wreathe.vercel.app',
-  //     methods: 'GET,POST,PUT,DELETE',
-  //     credentials: true,
-  //   }),
-  // )
-  app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'https://wreathe.vercel.app')
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept',
-    )
-    next()
-  })
+  app.use(
+    cors({
+      origin: 'https://wreathe.vercel.app',
+      methods: 'GET,POST,PUT,DELETE',
+      credentials: true,
+    }),
+  )
+  // app.use(function (req, res, next) {
+  //   res.header('Access-Control-Allow-Origin', 'https://wreathe.vercel.app')
+  //   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
+  //   res.header(
+  //     'Access-Control-Allow-Headers',
+  //     'Origin, X-Requested-With, Content-Type, Accept',
+  //   )
+  //   next()
+  // })
 }
+
+app.use(compression())
+app.use(logger('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, '../public')))
 
 app.use('/', indexRouter)
 app.use('/feed', feedRouter)
