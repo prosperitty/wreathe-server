@@ -30,7 +30,7 @@ const feedGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 OR: [
                     {
                         author_ref: {
-                            in: followingUsers.map(followedUser => followedUser.followingId),
+                            in: followingUsers.map((followedUser) => followedUser.followingId),
                         },
                     },
                     {
@@ -54,11 +54,21 @@ const feedGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 },
             },
         });
-        return res.json({ threads });
+        return res.json({
+            success: true,
+            message: 'SUCCESSFULLY FETCHED FEED',
+            threads,
+        });
     }
     catch (err) {
         console.error(err);
-        res.status(403).json({ err, message: 'there was an issue fetching posts' });
+        res
+            .status(403)
+            .json({
+            err,
+            success: false,
+            message: 'there was an issue fetching posts',
+        });
     }
 });
 exports.feedGet = feedGet;

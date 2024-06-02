@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginPost = exports.loginGet = void 0;
+// eslint-disable-next-line import/default
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt = require("jsonwebtoken");
 require("dotenv/config");
@@ -23,8 +24,8 @@ const loginGet = (req, res) => {
     res.send('login page');
 };
 exports.loginGet = loginGet;
-const secret = process.env.JWT_KEY;
-const encodedKey = new TextEncoder().encode(secret);
+const secretKey = process.env.JWT_KEY;
+// const encodedKey = new TextEncoder().encode(secret)
 const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
@@ -53,8 +54,8 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         //Refresh token
         const payload = { id: user.user_uid, username: user.username };
-        const accessToken = jwt.sign(payload, encodedKey, { expiresIn: '1h' });
-        const refreshToken = jwt.sign(payload, encodedKey, { expiresIn: '1d' });
+        const accessToken = jwt.sign(payload, secretKey, { expiresIn: '1h' });
+        const refreshToken = jwt.sign(payload, secretKey, { expiresIn: '1d' });
         //add refreshToken to user and store in DB?
         yield prisma.wreathe_user.update({
             where: { user_uid: user.user_uid },

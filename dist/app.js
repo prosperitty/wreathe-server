@@ -21,7 +21,6 @@ const search_js_1 = __importDefault(require("./routes/search.js"));
 const compose_js_1 = __importDefault(require("./routes/compose.js"));
 const register_js_1 = __importDefault(require("./routes/register.js"));
 const messages_js_1 = __importDefault(require("./routes/messages.js"));
-const refresh_token_js_1 = __importDefault(require("./routes/refresh-token.js"));
 const app = (0, express_1.default)();
 // const server = createServer()
 // const io = new Server(server, {
@@ -34,6 +33,12 @@ const app = (0, express_1.default)();
 if (process.env.NODE_ENV !== 'production') {
     app.use((0, cors_1.default)({
         origin: 'http://localhost:3000',
+        credentials: true,
+    }));
+}
+else {
+    app.use((0, cors_1.default)({
+        origin: 'https://wreathe.vercel.app/',
         credentials: true,
     }));
 }
@@ -53,7 +58,6 @@ app.use('/search', search_js_1.default);
 app.use('/compose', compose_js_1.default);
 app.use('/messages', messages_js_1.default);
 app.use('/register', register_js_1.default);
-app.use('/refresh-token', refresh_token_js_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next((0, http_errors_1.default)(404));

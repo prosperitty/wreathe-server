@@ -103,13 +103,12 @@ export const registerPost = [
 
       return res.json({ success: true, message: 'user successfully created' })
     } catch (err) {
-      return res
-        .status(403)
-        .json({
-          err,
-          success: false,
-          message: 'There was an issue registering a new user',
-        })
+      console.error(err)
+      return res.status(403).json({
+        err,
+        success: false,
+        message: 'There was an issue registering a new user',
+      })
     }
   },
 ]

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.messagePut = exports.messageDelete = exports.messagePost = exports.messageGet = exports.chatGet = void 0;
+exports.messagePost = exports.messageGet = exports.chatGet = void 0;
 const client_1 = require("@prisma/client");
 const express_validator_1 = require("express-validator");
 const prisma = new client_1.PrismaClient();
@@ -129,11 +129,9 @@ exports.messagePost = [
         }
     }),
 ];
-const messageDelete = (req, res) => {
-    console.log(req.params);
-};
-exports.messageDelete = messageDelete;
-const messagePut = (req, res) => {
-    console.log(req.params);
-};
-exports.messagePut = messagePut;
+// export const messageDelete = (req: Request, res: Response) => {
+//   console.log(req.params)
+// }
+// export const messagePut = (req: Request, res: Response) => {
+//   console.log(req.params)
+// }

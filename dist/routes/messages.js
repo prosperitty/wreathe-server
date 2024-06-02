@@ -11,6 +11,6 @@ const router = express_1.default.Router();
 router.get('/', authenticate_token_1.authenticateToken, inbox_control_1.inboxGet);
 router.get('/:recepientUsername', authenticate_token_1.authenticateToken, message_control_1.chatGet);
 router.post('/:recepientUsername', authenticate_token_1.authenticateToken, message_control_1.messagePost);
-router.delete('/', authenticate_token_1.authenticateToken, message_control_1.messageDelete);
-router.put('/', authenticate_token_1.authenticateToken, message_control_1.messagePut);
+// router.delete('/', authenticateToken, messageDelete)
+// router.put('/', authenticateToken, messagePut)
 exports.default = router;

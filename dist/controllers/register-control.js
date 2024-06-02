@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerPost = exports.registerGet = void 0;
+// eslint-disable-next-line import/default
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 require("dotenv/config");
 const client_1 = require("@prisma/client");
@@ -53,7 +54,6 @@ exports.registerPost = [
     (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const errors = (0, express_validator_1.validationResult)(req);
         const { first_name, last_name, username, password, email } = req.body;
-        console.log(req.body);
         if (!errors.isEmpty()) {
             console.error('VALIDATION FAILURE:', errors.array());
             return res.json({
@@ -77,7 +77,7 @@ exports.registerPost = [
             });
         }
         try {
-            // Validate if user exist in our databaseS
+            // Validate if user exist in our database
             const found_username = yield prisma.wreathe_user.findUnique({
                 where: { username },
                 select: { username: true },
@@ -107,18 +107,15 @@ exports.registerPost = [
                     user_password: encryptedPassword,
                 },
             });
-            return res.json({ message: 'user successfully created' });
+            return res.json({ success: true, message: 'user successfully created' });
         }
         catch (err) {
-            return res
-                .status(403)
-                .json({ err, message: 'There was an issue registering a new user' });
+            console.error(err);
+            return res.status(403).json({
+                err,
+                success: false,
+                message: 'There was an issue registering a new user',
+            });
         }
     }),
 ];
-// const user: NewUser = {
-//   first_name,
-//   last_name,
-//   email,
-//   password: encryptedPassword,
-// }

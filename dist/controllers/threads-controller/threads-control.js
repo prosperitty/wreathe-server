@@ -38,10 +38,18 @@ const threadsGet = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 },
             },
         });
-        return res.json({ threads });
+        return res.json({
+            success: true,
+            message: 'SUCCESSFULLY FETCHED THREAD',
+            threads,
+        });
     }
     catch (err) {
-        res.status(403).json({ err, message: 'there was an issue fetching posts' });
+        res.status(403).json({
+            err,
+            success: false,
+            message: 'there was an issue fetching posts',
+        });
     }
 });
 exports.threadsGet = threadsGet;
@@ -52,7 +60,6 @@ exports.threadsPost = [
         .notEmpty()
         .withMessage('Content can not be an empty space'),
     // body('isPublished', 'boolean value needed').isBoolean(),
-    // body('userUid', 'missing a user id reference').isUUID(),
     (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const errors = (0, express_validator_1.validationResult)(req);
         const threadData = {
@@ -71,13 +78,20 @@ exports.threadsPost = [
                 data: threadData,
             });
             const threadURL = `${req.user.id}/threads/${thread.thread_uid}`;
-            return res.json({ thread, threadURL });
+            return res.json({
+                success: true,
+                message: 'SUCCESSFULLY SUBMITTED THREAD',
+                thread,
+                threadURL,
+            });
         }
         catch (err) {
             console.error('THERE WAS AN ISSUE CREATING A NEW POST', err);
-            return res
-                .status(403)
-                .json({ err, message: 'there was an issue creating a new post' });
+            return res.status(403).json({
+                err,
+                success: false,
+                message: 'there was an issue creating a new post',
+            });
         }
     }),
 ];
@@ -102,12 +116,21 @@ exports.threadsPut = [
                 data: threadData,
             });
             const threadURL = `/threads/${thread.thread_uid}`;
-            return res.json({ thread, threadURL });
+            return res.json({
+                success: true,
+                message: 'SUCCESSFULLY UPDATED THREAD',
+                thread,
+                threadURL,
+            });
         }
         catch (err) {
             return res
                 .status(403)
-                .json({ err, message: 'there was an issue creating a new post' });
+                .json({
+                err,
+                success: false,
+                message: 'there was an issue creating a new post',
+            });
         }
     }),
 ];
@@ -116,24 +139,29 @@ const threadsDelete = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         // const thread = await prisma.thread.findUniqueOrThrow({
         //   where: { thread_uid: req.params.threadid },
         // })
-        try {
-            // const deletedImage = await cloudinary.uploader.destroy(
-            //   thread.image.public_url,
-            //   { invalidate: true },
-            // )
-            const deletedThread = yield prisma.thread.delete({
-                where: { thread_uid: req.params.threadid },
-            });
-            // console.log(deletedImage, '\n cloudinary image deleted')
-            console.log(deletedThread, '\n Thread has been deleted');
-            return res.json({ deletedThread });
-        }
-        catch (err) {
-            res.status(403).json({ err, message: 'there was an deleting the post.' });
-        }
+        // const deletedImage = await cloudinary.uploader.destroy(
+        //   thread.image.public_url,
+        //   { invalidate: true },
+        // )
+        const deletedThread = yield prisma.thread.delete({
+            where: { thread_uid: req.params.threadid },
+        });
+        // console.log(deletedImage, '\n cloudinary image deleted')
+        console.log(deletedThread, '\n Thread has been deleted');
+        return res.json({
+            success: true,
+            message: 'SUCCESSFULLY DELETED THREAD',
+            deletedThread,
+        });
     }
     catch (err) {
-        res.status(403).json({ err, message: 'there was an issue fetching posts' });
+        res
+            .status(403)
+            .json({
+            err,
+            success: false,
+            message: 'there was an issue fetching posts',
+        });
     }
 });
 exports.threadsDelete = threadsDelete;
