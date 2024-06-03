@@ -26,7 +26,6 @@ import messagesRouter from './routes/messages.js'
 
 const app: Express = express()
 app.use(helmet())
-app.set('trust proxy', 1)
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(
@@ -54,6 +53,7 @@ if (process.env.NODE_ENV !== 'production') {
   // })
 }
 
+app.set('trust proxy', 1)
 app.use(compression())
 app.use(logger('dev'))
 app.use(express.json())
