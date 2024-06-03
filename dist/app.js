@@ -22,14 +22,7 @@ const compose_js_1 = __importDefault(require("./routes/compose.js"));
 const register_js_1 = __importDefault(require("./routes/register.js"));
 const messages_js_1 = __importDefault(require("./routes/messages.js"));
 const app = (0, express_1.default)();
-// const server = createServer()
-// const io = new Server(server, {
-//   cors: {
-//     origin: ['http://localhost:3000', 'http://localhost:8080'], // Replace with your frontend URL
-//     // allowedHeaders: ["my-custom-header"],
-//     credentials: true,
-//   },
-// })
+app.use((0, helmet_1.default)());
 if (process.env.NODE_ENV !== 'production') {
     app.use((0, cors_1.default)({
         origin: 'http://localhost:3000',
@@ -38,11 +31,20 @@ if (process.env.NODE_ENV !== 'production') {
 }
 else {
     app.use((0, cors_1.default)({
-        origin: 'https://wreathe.vercel.app/',
+        origin: 'https://www.wreathe.vercel.app',
+        methods: 'GET,POST,PUT,DELETE',
         credentials: true,
     }));
+    // app.use(function (req, res, next) {
+    //   res.header('Access-Control-Allow-Origin', 'https://wreathe.vercel.app')
+    //   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
+    //   res.header(
+    //     'Access-Control-Allow-Headers',
+    //     'Origin, X-Requested-With, Content-Type, Accept',
+    //   )
+    //   next()
+    // })
 }
-app.use((0, helmet_1.default)());
 app.use((0, compression_1.default)());
 app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.json());
@@ -72,3 +74,11 @@ app.use(function (err, req, res) {
     res.render('error');
 });
 module.exports = app;
+// const server = createServer()
+// const io = new Server(server, {
+//   cors: {
+//     origin: ['http://localhost:3000', 'http://localhost:8080'], // Replace with your frontend URL
+//     // allowedHeaders: ["my-custom-header"],
+//     credentials: true,
+//   },
+// })
