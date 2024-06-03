@@ -23,6 +23,7 @@ const register_js_1 = __importDefault(require("./routes/register.js"));
 const messages_js_1 = __importDefault(require("./routes/messages.js"));
 const app = (0, express_1.default)();
 app.use((0, helmet_1.default)());
+app.set('trust proxy', 1);
 if (process.env.NODE_ENV !== 'production') {
     app.use((0, cors_1.default)({
         origin: 'http://localhost:3000',

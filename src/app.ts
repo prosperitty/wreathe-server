@@ -26,6 +26,7 @@ import messagesRouter from './routes/messages.js'
 
 const app: Express = express()
 app.use(helmet())
+app.set('trust proxy', 1)
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(
