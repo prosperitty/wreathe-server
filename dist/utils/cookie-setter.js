@@ -16,7 +16,7 @@ const setRefreshToken = (res, name, token, maxAge) => {
         const options = {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            sameSite: 'none',
             maxAge,
             path: '/logout',
         };
@@ -39,7 +39,7 @@ const setAccessToken = (res, name, token, maxAge) => {
         const options = {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            sameSite: 'none',
             maxAge,
             path: '/',
         };
@@ -62,7 +62,7 @@ const setUserData = (res, name, userData, maxAge) => {
         const options = {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            sameSite: 'none',
             maxAge,
             path: '/',
         };
