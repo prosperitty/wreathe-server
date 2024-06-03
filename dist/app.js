@@ -31,8 +31,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 else {
     app.use((0, cors_1.default)({
-        origin: 'https://www.wreathe.vercel.app',
-        methods: 'GET,POST,PUT,DELETE',
+        origin: 'https://wreathe.vercel.app',
+        methods: 'GET,POST,PUT,DELETE,OPTIONS',
         credentials: true,
     }));
     // app.use(function (req, res, next) {
