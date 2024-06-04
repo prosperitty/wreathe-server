@@ -19,8 +19,7 @@ export const setRefreshToken = (
     const options: CookieOptions = {
       httpOnly: true,
       secure: true,
-      domain: 'wreathe.vercel.app',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge,
       path: '/logout',
     }
@@ -47,8 +46,7 @@ export const setAccessToken = (
     const options: CookieOptions = {
       httpOnly: true,
       secure: true,
-      domain: 'wreathe.vercel.app',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge,
       path: '/',
     }
@@ -75,8 +73,7 @@ export const setUserData = (
     const options: CookieOptions = {
       httpOnly: true,
       secure: true,
-      domain: 'wreathe.vercel.app',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge,
       path: '/',
     }
