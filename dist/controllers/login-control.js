@@ -72,13 +72,24 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
         (0, cookie_setter_1.setUserData)(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000);
         // Send the access token in the response
-        return res.json({ accessToken, userData, refreshToken });
+        return res.json({
+            success: true,
+            message: 'Login Successful',
+            accessToken,
+            userData,
+            refreshToken,
+        });
     }
     catch (error) {
         console.error('THERE WAS IN ISSUE SIGNING IN', error);
         return res
             .status(403)
-            .json({ error, errorMessage: `THERE WAS AN ISSUE SIGNING IN: ${error}` });
+            .json({
+            error,
+            success: false,
+            message: 'Something went wrong, try again.',
+            errorMessage: `THERE WAS AN ISSUE SIGNING IN: ${error}`,
+        });
     }
 });
 exports.loginPost = loginPost;
