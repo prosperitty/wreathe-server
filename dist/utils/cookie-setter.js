@@ -16,7 +16,8 @@ const setRefreshToken = (res, name, token, maxAge) => {
         const options = {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            domain: 'wreathe.vercel.app',
+            sameSite: 'strict',
             maxAge,
             path: '/logout',
         };
@@ -39,7 +40,8 @@ const setAccessToken = (res, name, token, maxAge) => {
         const options = {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            domain: 'wreathe.vercel.app',
+            sameSite: 'strict',
             maxAge,
             path: '/',
         };
@@ -62,7 +64,8 @@ const setUserData = (res, name, userData, maxAge) => {
         const options = {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            domain: 'wreathe.vercel.app',
+            sameSite: 'strict',
             maxAge,
             path: '/',
         };
