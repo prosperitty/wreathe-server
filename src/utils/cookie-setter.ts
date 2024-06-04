@@ -19,7 +19,7 @@ export const setRefreshToken = (
     const options: CookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       maxAge,
       path: '/logout',
     }
@@ -46,7 +46,7 @@ export const setAccessToken = (
     const options: CookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       maxAge,
       path: '/',
     }
@@ -73,7 +73,7 @@ export const setUserData = (
     const options: CookieOptions = {
       httpOnly: true,
       secure: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       maxAge,
       path: '/',
     }
