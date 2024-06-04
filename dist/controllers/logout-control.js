@@ -16,21 +16,27 @@ const prisma = new client_1.PrismaClient();
 const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // THIS IS TEST CODE FOR SERVER ACTIONS ON THE CLIENT SIDE IN NEXT JS
-        // const refreshToken = req.headers.authorization.split(' ')[1]
-        const refreshToken = req.cookies.refreshToken;
+        if (!req.headers.authorization) {
+            console.error('NO HEADERS SET');
+            throw new Error('NO REFRESH TOKEN PROVIDED IN HEADER.');
+        }
+        const refreshToken = req.headers.authorization;
+        const bearerToken = refreshToken.split(' ')[1];
+        // const refreshToken = req.cookies.refreshToken
         const secret = process.env.JWT_KEY;
-        const decoded = jwt.verify(refreshToken, secret);
+        const decoded = jwt.verify(bearerToken, secret);
         const userId = decoded.id;
         // Logic here for also remove refreshtoken from db
-        yield prisma.wreathe_user.update({
+        console.log(yield prisma.wreathe_user.update({
             where: { user_uid: userId },
             data: { refresh_token: null },
-        });
+        }));
         //bug, can not logout without using /logout path because cookie can only be retrieved from this path
         res.clearCookie('refreshToken', { path: '/logout' });
         res.clearCookie('accessToken', { path: '/' });
         res.clearCookie('userData', { path: '/' });
         return res.json({
+            success: true,
             message: 'Log Out Successful',
         });
     }
@@ -38,7 +44,7 @@ const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         console.error('THERE WAS AN ISSUE LOGGING OUT', err);
         return res
             .status(403)
-            .json({ err, message: 'There was an issue logging out' });
+            .json({ err, success: false, message: 'There was an issue logging out' });
     }
 });
 exports.logoutPost = logoutPost;
