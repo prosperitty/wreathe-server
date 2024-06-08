@@ -27,10 +27,10 @@ const logoutPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const decoded = jwt.verify(bearerToken, secret);
         const userId = decoded.id;
         // Logic here for also remove refreshtoken from db
-        console.log(yield prisma.wreathe_user.update({
+        yield prisma.wreathe_user.update({
             where: { user_uid: userId },
             data: { refresh_token: null },
-        }));
+        });
         //bug, can not logout without using /logout path because cookie can only be retrieved from this path
         res.clearCookie('refreshToken', { path: '/logout' });
         res.clearCookie('accessToken', { path: '/' });

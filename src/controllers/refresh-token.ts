@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express'
 import jwt = require('jsonwebtoken')
-import {
-  setAccessToken,
-  setRefreshToken,
-  setUserData,
-} from '../utils/cookie-setter'
+// import {
+//   setAccessToken,
+//   setRefreshToken,
+//   setUserData,
+// } from '../utils/cookie-setter'
 import { PrismaClient } from '@prisma/client'
 import { RequestUser } from '../utils/types'
 const prisma = new PrismaClient()
@@ -13,24 +13,44 @@ const secretKey: string = process.env.JWT_KEY as string
 // const encodedKey = new TextEncoder().encode(secret);
 
 export const refreshTokenPost = async (req: Request, res: Response) => {
-  const accessToken = req.cookies.accessToken
-  const refreshToken = req.cookies.refreshToken
-  const userData = req.cookies.userData
+  // console.log(req.cookies)
+  // const accessToken = req.cookies.accessToken
+  // const refreshToken = req.cookies.refreshToken
+  // const userData = req.cookies.userData
 
-  // If we don't have a token in our request
-  if (!refreshToken) {
-    res.clearCookie('userData', { path: '/' })
-    console.error('NO REFRESH TOKEN PROVIDED! SIGN IN OR REGISTER NEEDED:')
-    return res
-      .status(401)
-      .json({ error: 'no refresh token provided! Sign in.' })
-  }
-  if (accessToken) {
-    console.log('ACCESS TOKEN STILL EXISTS!')
-    return res.json({ accessToken, userData })
-  }
+  // // If we don't have a token in our request
+  // if (!refreshToken) {
+  //   res.clearCookie('userData', { path: '/' })
+  //   console.error('NO REFRESH TOKEN PROVIDED! SIGN IN OR REGISTER NEEDED:')
+  //   return res
+  //     .status(401)
+  //     .json({
+  //       error: 'no refresh token provided! Sign in.',
+  //       success: false,
+  //       accessToken: null,
+  //     })
+  // }
+  // if (accessToken) {
+  //   console.log('ACCESS TOKEN STILL EXISTS!')
+  //   return res.json({
+  //     accessToken,
+  //     userData,
+  //     success: true,
+  //     message: 'ACCESS TOKEN STILL EXISTS',
+  //   })
+  // }
 
   try {
+    if (!req.headers.authorization) {
+      console.error('NO HEADERS SET')
+      return res.status(401).json({
+        error: 'no refresh token provided! Sign in.',
+        success: false,
+        accessToken: null,
+      })
+    }
+    const refreshToken = req.headers.authorization.split(' ')[1]
+
     // We have a token, let's verify it!
     const decoded = jwt.verify(refreshToken, secretKey) as RequestUser
     const userId = decoded.id
@@ -41,19 +61,23 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
     })
     if (!user) {
       console.error('USER DOES NOT EXIST! ERROR FINDING USER IN DB')
-      return res.status(401).json({ error: 'User does not exist' })
+      return res.status(401).json({
+        error: 'User does not exist',
+        success: false,
+        accessToken: null,
+      })
     }
 
     // user exist, check if refreshtoken exist on user
     if (user.refresh_token !== refreshToken) {
-      console.log(user.refresh_token, '\n')
-      console.log(refreshToken, '\n')
       console.error(
         'NO REFRESH TOKEN FOUND ON USER! OR REFRESH TOKEN DOES NOT MATCH BROWSER REFRESH TOKEN WITH USERS REFRESH TOKEN!',
       )
-      return res
-        .status(401)
-        .json({ error: 'The user does not have a refresh token!' })
+      return res.status(401).json({
+        error: 'The user does not have a refresh token!',
+        success: false,
+        accessToken: null,
+      })
     }
 
     // token exist, create new Refresh- and accesstoken
@@ -76,14 +100,26 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
       username: user.username,
     }
 
-    setAccessToken(res, 'accessToken', newAccessToken, 60 * 60 * 1000)
-    setRefreshToken(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000)
-    setUserData(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000)
+    // setAccessToken(res, 'accessToken', newAccessToken, 60 * 60 * 1000)
+    // setRefreshToken(res, 'refreshToken', newRefreshToken, 24 * 60 * 60 * 1000)
+    // setUserData(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000)
 
-    return res.json({ accessToken: newAccessToken, userData })
+    return res.json({
+      success: true,
+      message: 'Refreshed token successfully',
+      accessToken: newAccessToken,
+      refreshToken: refreshToken,
+      userData,
+    })
   } catch (err) {
     console.error('THERE WAS AN ISSUE REFRESHING THE TOKEN\n', err)
-    return res.status(403).json(err)
+    return res.status(403).json({
+      err,
+      success: false,
+      message: 'THERE WAS AN ISSUE REFRESHING THE TOKEN.',
+      error: `THERE WAS AN ISSUE REFRESHING THE TOKEN: ${err}`,
+      accessToken: null,
+    })
   }
 }
 

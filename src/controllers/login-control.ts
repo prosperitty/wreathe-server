@@ -4,11 +4,11 @@ import bcrypt from 'bcryptjs'
 import jwt = require('jsonwebtoken')
 import 'dotenv/config'
 import { LoginCredentials } from '../utils/types'
-import {
-  setAccessToken,
-  setRefreshToken,
-  setUserData,
-} from '../utils/cookie-setter'
+// import {
+//   setAccessToken,
+//   setRefreshToken,
+//   setUserData,
+// } from '../utils/cookie-setter'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
@@ -66,9 +66,9 @@ export const loginPost = async (req: Request, res: Response) => {
       username: user.username,
     }
 
-    setAccessToken(res, 'accessToken', accessToken, 60 * 60 * 1000)
-    setRefreshToken(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000)
-    setUserData(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000)
+    // setAccessToken(res, 'accessToken', accessToken, 60 * 60 * 1000)
+    // setRefreshToken(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000)
+    // setUserData(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000)
 
     // Send the access token in the response
     return res.json({
@@ -80,14 +80,12 @@ export const loginPost = async (req: Request, res: Response) => {
     })
   } catch (error) {
     console.error('THERE WAS IN ISSUE SIGNING IN', error)
-    return res
-      .status(403)
-      .json({
-        error,
-        success: false,
-        message: 'Something went wrong, try again.',
-        errorMessage: `THERE WAS AN ISSUE SIGNING IN: ${error}`,
-      })
+    return res.status(403).json({
+      error,
+      success: false,
+      message: 'Something went wrong, try again.',
+      errorMessage: `THERE WAS AN ISSUE SIGNING IN: ${error}`,
+    })
   }
 }
 

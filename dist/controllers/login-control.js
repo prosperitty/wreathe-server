@@ -17,7 +17,11 @@ exports.loginPost = exports.loginGet = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt = require("jsonwebtoken");
 require("dotenv/config");
-const cookie_setter_1 = require("../utils/cookie-setter");
+// import {
+//   setAccessToken,
+//   setRefreshToken,
+//   setUserData,
+// } from '../utils/cookie-setter'
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const loginGet = (req, res) => {
@@ -68,9 +72,9 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             email: user.email,
             username: user.username,
         };
-        (0, cookie_setter_1.setAccessToken)(res, 'accessToken', accessToken, 60 * 60 * 1000);
-        (0, cookie_setter_1.setRefreshToken)(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000);
-        (0, cookie_setter_1.setUserData)(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000);
+        // setAccessToken(res, 'accessToken', accessToken, 60 * 60 * 1000)
+        // setRefreshToken(res, 'refreshToken', refreshToken, 24 * 60 * 60 * 1000)
+        // setUserData(res, 'userData', JSON.stringify(userData), 24 * 60 * 60 * 1000)
         // Send the access token in the response
         return res.json({
             success: true,
@@ -82,9 +86,7 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) {
         console.error('THERE WAS IN ISSUE SIGNING IN', error);
-        return res
-            .status(403)
-            .json({
+        return res.status(403).json({
             error,
             success: false,
             message: 'Something went wrong, try again.',
