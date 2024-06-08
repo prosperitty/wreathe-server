@@ -75,8 +75,8 @@ export const loginPost = async (req: Request, res: Response) => {
       success: true,
       message: 'Login Successful',
       accessToken,
-      userData,
       refreshToken,
+      userData,
     })
   } catch (error) {
     console.error('THERE WAS IN ISSUE SIGNING IN', error)

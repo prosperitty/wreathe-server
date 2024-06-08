@@ -104,7 +104,7 @@ const refreshTokenPost = (req, res) => __awaiter(void 0, void 0, void 0, functio
             success: true,
             message: 'Refreshed token successfully',
             accessToken: newAccessToken,
-            refreshToken: refreshToken,
+            refreshToken: newRefreshToken,
             userData,
         });
     }

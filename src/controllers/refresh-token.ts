@@ -108,7 +108,7 @@ export const refreshTokenPost = async (req: Request, res: Response) => {
       success: true,
       message: 'Refreshed token successfully',
       accessToken: newAccessToken,
-      refreshToken: refreshToken,
+      refreshToken: newRefreshToken,
       userData,
     })
   } catch (err) {

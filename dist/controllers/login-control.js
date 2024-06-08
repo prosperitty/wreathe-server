@@ -80,8 +80,8 @@ const loginPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             success: true,
             message: 'Login Successful',
             accessToken,
-            userData,
             refreshToken,
+            userData,
         });
     }
     catch (error) {
